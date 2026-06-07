@@ -262,8 +262,8 @@
     </div>
 
     <label for="api-key-input">GOOGLE GEMINI API KEY</label>
-    <input type="password" id="api-key-input" placeholder="AIzaSy..." autocomplete="off">
-    <span class="modal-hint">金鑰以 AIzaSy 開頭・儲存在瀏覽器本機・每天 1500 次免費請求</span>
+    <input type="password" id="api-key-input" placeholder="AIzaSy... 或 AQ.Ab8..." autocomplete="off">
+    <span class="modal-hint">金鑰儲存在瀏覽器本機・每天 1500 次免費請求・不需信用卡</span>
 
     <button class="modal-btn" onclick="handleStart()">⚔ 進入尸魂界</button>
   </div>
@@ -485,7 +485,7 @@ window.addEventListener('DOMContentLoaded', () => {
 function handleStart() {
   const val = document.getElementById('api-key-input').value.trim();
   if (val && !val.startsWith('•')) {
-    if (!val.startsWith('AIza')) { alert('請輸入正確的 Gemini API 金鑰（以 AIzaSy 開頭）'); return; }
+    if (val.length < 10) { alert('金鑰太短，請確認是否複製完整'); return; }
     apiKey = val;
     localStorage.setItem('bleach_gemini_key', val);
   }
