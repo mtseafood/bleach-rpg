@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>死神 BLEACH RPG</title>
+<style>
+  /* ──────────────────────────────────────────
+     RESET & BASE
+  ────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-dark:    #0a0a0f;
+    --bg-panel:   #111118;
+    --bg-card:    #16161f;
+    --bg-input:   #1a1a25;
+    --border:     #2a2a3a;
+    --border-glow:#ff6b00;
+    --accent:     #ff6b00;
+    --accent2:    #ffaa00;
+    --accent-dim: #7a3300;
+    --text:       #e8e8f0;
+    --text-dim:   #7a7a9a;
+    --text-muted: #4a4a6a;
+    --hp:         #e05050;
+    --mp:         #4090ff;
+    --sta:        #40c060;
+    --user-msg:   #1a2035;
+    --ai-msg:     #101020;
+    --scrollbar:  #2a2a3a;
+    --red-clan:   #cc2222;
+    --gold:       #d4a820;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg-dark);
+    color: var(--text);
+    font-family: 'Segoe UI', 'Noto Sans TC', 'Hiragino Kaku Gothic Pro', sans-serif;
+    overflow: hidden;
+  }
+
+  /* ──────────────────────────────────────────
+     LAYOUT
+  ────────────────────────────────────────── */
+  #app {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    grid-template-rows: 56px 1fr;
+    height: 100vh;
+    gap: 0;
+  }
+
+  /* ──────────────────────────────────────────
+     HEADER
+  ────────────────────────────────────────── */
+  #header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    background: #0d0d16;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .logo-kanji {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--accent);
+    letter-spacing: -1px;
+    text-shadow: 0 0 12px var(--accent);
+  }
+
+  .logo-sub {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+
+  .header-sep { flex: 1; }
+
+  .header-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    letter-spacing: 1px;
+    transition: all .2s;
+  }
+  .header-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .header-btn.danger { border-color: #442222; color: #cc5555; }
+  .header-btn.danger:hover { border-color: #cc2222; color: #ff4444; }
+
+  /* ──────────────────────────────────────────
+     SIDEBAR
+  ────────────────────────────────────────── */
+  #sidebar {
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-track { background: transparent; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 2px; }
+
+  .sidebar-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+  }
+
+  .sidebar-title {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sidebar-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Character name */
+  .char-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+  .char-meta {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+  .char-badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-top: 6px;
+    border: 1px solid var(--accent-dim);
+  }
+
+  /* Stat bars */
+  .stat-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 7px;
+  }
+  .stat-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    width: 20px;
+    flex-shrink: 0;
+  }
+  .stat-bar-bg {
+    flex: 1;
+    height: 6px;
+    background: #1a1a2a;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .stat-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width .5s ease;
+  }
+  .stat-bar-fill.hp  { background: linear-gradient(90deg, #8b0000, var(--hp)); }
+  .stat-bar-fill.mp  { background: linear-gradient(90deg, #003380, var(--mp)); }
+  .stat-bar-fill.sta { background: linear-gradient(90deg, #005520, var(--sta)); }
+  .stat-val {
+    font-size: 10px;
+    color: var(--text-dim);
+    width: 30px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* Attributes grid */
+  .attr-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .attr-item {
+    background: #0f0f1a;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 8px;
+  }
+  .attr-name { font-size: 9px; color: var(--text-muted); letter-spacing: 1px; }
+  .attr-val  { font-size: 14px; font-weight: 700; color: var(--accent2); margin-top: 1px; }
+
+  /* Zanpakuto */
+  .zanpakuto-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gold);
+    text-shadow: 0 0 8px rgba(212,168,32,.4);
+  }
+  .zanpakuto-state {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 3px;
+  }
+  .zanpakuto-sealed { color: var(--text-muted); }
+  .zanpakuto-shikai { color: #4488ff; }
+  .zanpakuto-bankai { color: #ff4444; text-shadow: 0 0 8px rgba(255,68,68,.5); }
+
+  /* Faction */
+  .faction-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    padding: 4px 0;
+    border-bottom: 1px solid #1a1a2a;
+  }
+  .faction-row:last-child { border-bottom: none; }
+  .faction-name { color: var(--text-dim); }
+  .rep { font-weight: 700; font-size: 10px; }
+  .rep.friendly  { color: var(--sta); }
+  .rep.neutral   { color: var(--text-muted); }
+  .rep.hostile   { color: var(--hp); }
+  .rep.revered   { color: var(--gold); }
+
+  /* World events ticker */
+  .event-item {
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 5px 0;
+    border-bottom: 1px solid #1a1a28;
+    line-height: 1.5;
+  }
+  .event-item:last-child { border-bottom: none; }
+  .event-item .dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* ──────────────────────────────────────────
+     MAIN CHAT AREA
+  ────────────────────────────────────────── */
+  #main {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg-dark);
+  }
+
+  /* Messages */
+  #messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  #messages::-webkit-scrollbar { width: 5px; }
+  #messages::-webkit-scrollbar-track { background: transparent; }
+  #messages::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 3px; }
+
+  .msg {
+    max-width: 100%;
+    padding: 16px 18px;
+    margin-bottom: 2px;
+    border-radius: 0;
+    font-size: 14px;
+    line-height: 1.75;
+    border-left: 3px solid transparent;
+    position: relative;
+  }
+
+  .msg.ai {
+    background: var(--ai-msg);
+    border-left-color: var(--accent);
+    color: var(--text);
+  }
+
+  .msg.user {
+    background: var(--user-msg);
+    border-left-color: #3355aa;
+    color: #a0b0e0;
+    font-style: italic;
+  }
+
+  .msg.system {
+    background: #0a1520;
+    border-left-color: #0055aa;
+    color: #5599cc;
+    font-size: 12px;
+    letter-spacing: .5px;
+  }
+
+  .msg.error {
+    background: #1a0808;
+    border-left-color: #aa2222;
+    color: #cc5555;
+    font-size: 13px;
+  }
+
+  .msg-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .msg.ai   .msg-label { color: var(--accent-dim); }
+  .msg.user .msg-label { color: #334466; }
+
+  /* Markdown-style rendering in AI messages */
+  .msg.ai h2 { font-size: 13px; letter-spacing: 2px; color: var(--accent); margin: 12px 0 6px; text-transform: uppercase; }
+  .msg.ai h3 { font-size: 13px; color: var(--accent2); margin: 10px 0 4px; }
+  .msg.ai strong { color: var(--accent2); font-weight: 600; }
+  .msg.ai em { color: #a0a8c0; }
+  .msg.ai code { background: #1a1a2a; color: var(--accent2); padding: 1px 5px; border-radius: 3px; font-family: monospace; font-size: 12px; }
+  .msg.ai pre {
+    background: #0f0f1a;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px;
+    margin: 8px 0;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: #c0c8e0;
+    white-space: pre-wrap;
+    line-height: 1.6;
+  }
+  .msg.ai hr { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+  .msg.ai table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 12px; }
+  .msg.ai th { background: #1a1a2a; color: var(--accent2); padding: 6px 10px; text-align: left; border: 1px solid var(--border); }
+  .msg.ai td { padding: 5px 10px; border: 1px solid var(--border); color: var(--text-dim); }
+  .msg.ai td:first-child { color: var(--text); }
+  .msg.ai ul, .msg.ai ol { padding-left: 20px; margin: 6px 0; }
+  .msg.ai li { margin-bottom: 3px; color: var(--text-dim); }
+
+  /* Typing indicator */
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 14px 18px;
+    background: var(--ai-msg);
+    border-left: 3px solid var(--accent);
+    margin-bottom: 2px;
+  }
+  .typing-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: bounce .9s infinite;
+    opacity: .6;
+  }
+  .typing-dot:nth-child(2) { animation-delay: .15s; }
+  .typing-dot:nth-child(3) { animation-delay: .30s; }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); opacity: .4; }
+    50%      { transform: translateY(-4px); opacity: 1; }
+  }
+
+  /* Action chips */
+  #action-bar {
+    padding: 8px 24px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    background: #0d0d16;
+    border-top: 1px solid var(--border);
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .action-chip {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .action-chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: #1a1008;
+  }
+  .action-chip.special {
+    border-color: #334;
+    color: #668;
+  }
+  .action-chip.special:hover {
+    border-color: #4488ff;
+    color: #6699ff;
+    background: #0a1020;
+  }
+
+  /* Input area */
+  #input-area {
+    padding: 12px 24px 16px;
+    background: #0d0d16;
+    border-top: 1px solid var(--border);
+  }
+
+  .input-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  #user-input {
+    flex: 1;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 14px;
+    padding: 10px 14px;
+    resize: none;
+    min-height: 42px;
+    max-height: 120px;
+    outline: none;
+    line-height: 1.5;
+    font-family: inherit;
+    transition: border-color .2s;
+  }
+  #user-input:focus { border-color: var(--accent); }
+  #user-input::placeholder { color: var(--text-muted); }
+
+  #send-btn {
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all .2s;
+    min-height: 42px;
+    white-space: nowrap;
+  }
+  #send-btn:hover  { background: var(--accent2); transform: translateY(-1px); }
+  #send-btn:active { transform: translateY(0); }
+  #send-btn:disabled { background: var(--accent-dim); cursor: not-allowed; transform: none; opacity: .6; }
+
+  /* ──────────────────────────────────────────
+     API KEY MODAL
+  ────────────────────────────────────────── */
+  #modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn .3s;
+  }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  #modal-overlay.hidden { display: none; }
+
+  .modal {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 36px 40px;
+    width: 480px;
+    max-width: 95vw;
+    animation: slideUp .3s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  .modal-logo {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .modal-kanji {
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--accent);
+    text-shadow: 0 0 30px var(--accent);
+    line-height: 1;
+    display: block;
+  }
+  .modal-title {
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: 6px;
+    display: block;
+  }
+
+  .modal h2 {
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .modal p {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+  .modal p a { color: var(--accent); text-decoration: none; }
+  .modal p a:hover { text-decoration: underline; }
+
+  .modal label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .modal input[type="password"],
+  .modal input[type="text"] {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--text);
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    font-family: monospace;
+    letter-spacing: 1px;
+    transition: border-color .2s;
+    margin-bottom: 6px;
+  }
+  .modal input:focus { border-color: var(--accent); }
+
+  .modal-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .modal-btn {
+    width: 100%;
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all .2s;
+  }
+  .modal-btn:hover { background: var(--accent2); }
+
+  .modal-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+
+  .key-stored-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--sta);
+    margin-bottom: 16px;
+  }
+  .key-stored-badge::before {
+    content: '●';
+    color: var(--sta);
+    font-size: 8px;
+  }
+
+  /* ──────────────────────────────────────────
+     RESPONSIVE
+  ────────────────────────────────────────── */
+  @media (max-width: 700px) {
+    #app { grid-template-columns: 1fr; grid-template-rows: 56px auto 1fr; }
+    #sidebar { display: none; }
+    #sidebar.mobile-open { display: flex; position: fixed; left: 0; top: 56px; bottom: 0; width: 260px; z-index: 100; }
+    #header { padding: 0 12px; }
+    #messages { padding: 14px 14px; }
+    #input-area { padding: 10px 14px 12px; }
+    #action-bar { padding: 6px 14px; }
+  }
+
+  /* ──────────────────────────────────────────
+     WELCOME SCREEN (shown before API key)
+  ────────────────────────────────────────── */
+  #welcome-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+    padding: 40px;
+  }
+  .welcome-kanji {
+    font-size: 64px;
+    font-weight: 900;
+    color: var(--accent);
+    text-shadow: 0 0 40px rgba(255,107,0,.5);
+    line-height: 1;
+  }
+  .welcome-sub {
+    font-size: 12px;
+    letter-spacing: 6px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+  .welcome-desc {
+    font-size: 14px;
+    color: var(--text-dim);
+    max-width: 400px;
+    line-height: 1.8;
+  }
+  .welcome-start-btn {
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 14px 40px;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 8px;
+    transition: all .2s;
+    box-shadow: 0 0 20px rgba(255,107,0,.3);
+  }
+  .welcome-start-btn:hover {
+    background: var(--accent2);
+    box-shadow: 0 0 30px rgba(255,170,0,.4);
+    transform: translateY(-2px);
+  }
+
+  /* ──────────────────────────────────────────
+     MISC UTILITIES
+  ────────────────────────────────────────── */
+  .hidden { display: none !important; }
+  .glow-text { text-shadow: 0 0 8px currentColor; }
+
+  /* Stream cursor */
+  .stream-cursor::after {
+    content: '▋';
+    animation: blink .8s step-end infinite;
+    color: var(--accent);
+    font-size: .9em;
+  }
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0; } }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     API KEY MODAL
+════════════════════════════════════════════ -->
+<div id="modal-overlay">
+  <div class="modal">
+    <div class="modal-logo">
+      <span class="modal-kanji">死神</span>
+      <span class="modal-title">BLEACH RPG — Soul Society Engine</span>
+    </div>
+
+    <div id="key-stored-row" class="key-stored-badge hidden">
+      API 金鑰已儲存 — 可直接進入遊戲
+    </div>
+
+    <h2>輸入 Anthropic API 金鑰</h2>
+    <p>
+      本遊戲直接從瀏覽器呼叫 Claude API 驅動 RPG 引擎。<br>
+      金鑰僅儲存在你的瀏覽器本機（localStorage），不會傳送到任何伺服器。<br>
+      <a href="https://console.anthropic.com/settings/keys" target="_blank">→ 前往 Anthropic Console 取得金鑰</a>
+    </p>
+
+    <label for="api-key-input">ANTHROPIC API KEY</label>
+    <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off">
+    <span class="modal-hint">金鑰以 sk-ant- 開頭</span>
+
+    <button class="modal-btn" id="start-btn" onclick="handleStart()">
+      ⚔ 進入尸魂界
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MAIN APP
+════════════════════════════════════════════ -->
+<div id="app">
+
+  <!-- HEADER -->
+  <header id="header">
+    <div class="header-logo">
+      <span class="logo-kanji">死神</span>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);">BLEACH RPG</div>
+        <div class="logo-sub">Soul Society Engine</div>
+      </div>
+    </div>
+    <div class="header-sep"></div>
+    <button class="header-btn" onclick="showApiModal()" title="更換 API 金鑰">⚙ API KEY</button>
+    <button class="header-btn danger" onclick="confirmReset()" title="重置遊戲">↺ 重置遊戲</button>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+
+    <!-- Character Card -->
+    <div class="sidebar-section">
+      <div class="sidebar-title">角色</div>
+      <div class="char-name" id="char-name">——</div>
+      <div class="char-meta" id="char-meta">種族 / 所屬未知</div>
+      <span class="char-badge" id="char-badge">建立角色中</span>
+
+      <div style="margin-top:14px;">
+        <div class="stat-row">
+          <span class="stat-label">HP</span>
+          <div class="stat-bar-bg"><div class="stat-bar-fill hp" id="bar-hp" style="width:100%"></div></div>
+          <span class="stat-val" id="val-hp">100%</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">靈力</span>
+          <div class="stat-bar-bg"><div class="stat-bar-fill mp" id="bar-mp" style="width:100%"></div></div>
+          <span class="stat-val" id="val-mp">100%</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">體力</span>
+          <div class="stat-bar-bg"><div class="stat-bar-fill sta" id="bar-sta" style="width:100%"></div></div>
+          <span class="stat-val" id="val-sta">100%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zanpakuto -->
+    <div class="sidebar-section">
+      <div class="sidebar-title">斬魄刀</div>
+      <div class="zanpakuto-name" id="zanpakuto-name">— 未解放 —</div>
+      <div class="zanpakuto-state zanpakuto-sealed" id="zanpakuto-state">封印中</div>
+      <div style="margin-top:8px; font-size:11px; color:var(--text-muted); line-height:1.6;" id="zanpakuto-ability">始解：未習得<br>卍解：未習得</div>
+    </div>
+
+    <!-- Attributes -->
+    <div class="sidebar-section">
+      <div class="sidebar-title">屬性</div>
+      <div class="attr-grid">
+        <div class="attr-item"><div class="attr-name">力量</div><div class="attr-val" id="attr-pow">—</div></div>
+        <div class="attr-item"><div class="attr-name">速度</div><div class="attr-val" id="attr-spd">—</div></div>
+        <div class="attr-item"><div class="attr-name">耐久</div><div class="attr-val" id="attr-dur">—</div></div>
+        <div class="attr-item"><div class="attr-name">靈壓</div><div class="attr-val" id="attr-rei">—</div></div>
+        <div class="attr-item"><div class="attr-name">靈感</div><div class="attr-val" id="attr-per">—</div></div>
+        <div class="attr-item"><div class="attr-name">意志</div><div class="attr-val" id="attr-wil">—</div></div>
+        <div class="attr-item"><div class="attr-name">智慧</div><div class="attr-val" id="attr-int">—</div></div>
+        <div class="attr-item"><div class="attr-name">魅力</div><div class="attr-val" id="attr-cha">—</div></div>
+      </div>
+    </div>
+
+    <!-- Reputation -->
+    <div class="sidebar-section">
+      <div class="sidebar-title">勢力聲望</div>
+      <div class="faction-row">
+        <span class="faction-name">護廷十三隊</span>
+        <span class="rep neutral" id="rep-gotei">中立</span>
+      </div>
+      <div class="faction-row">
+        <span class="faction-name">中央四十六室</span>
+        <span class="rep neutral" id="rep-c46">中立</span>
+      </div>
+      <div class="faction-row">
+        <span class="faction-name">四大貴族</span>
+        <span class="rep neutral" id="rep-noble">中立</span>
+      </div>
+      <div class="faction-row">
+        <span class="faction-name">流魂街</span>
+        <span class="rep neutral" id="rep-rukongai">中立</span>
+      </div>
+      <div class="faction-row">
+        <span class="faction-name">十刃</span>
+        <span class="rep neutral" id="rep-espada">中立</span>
+      </div>
+    </div>
+
+    <!-- World Events -->
+    <div class="sidebar-section">
+      <div class="sidebar-title">世界動態</div>
+      <div id="world-events">
+        <div class="event-item"><span class="dot"></span>靜待靈魂覺醒…</div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- MAIN CHAT -->
+  <main id="main">
+    <div id="messages"></div>
+    <div id="action-bar"></div>
+    <div id="input-area">
+      <div class="input-row">
+        <textarea
+          id="user-input"
+          placeholder="輸入你的行動或對話…（Enter 送出，Shift+Enter 換行）"
+          rows="1"
+        ></textarea>
+        <button id="send-btn" onclick="sendMessage()">送出 ▶</button>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT ENGINE
+════════════════════════════════════════════ -->
+<script>
+/* ─────────────────────────────────────────────────────
+   SYSTEM PROMPT — BLEACH RPG ENGINE
+───────────────────────────────────────────────────── */
+const SYSTEM_PROMPT = `你是《死神 BLEACH》世界觀的 MMORPG 級文字冒險引擎。
+
+你的任務不是說故事，而是模擬一個真實運作的靈魂世界。
+玩家只是世界的一份子。護廷十三隊、虛圈、中央四十六室的一切事務會持續推進，無論玩家是否參與。
+
+═══ 核心規則 ═══
+
+1. 世界真實性 > 劇情方便性
+2. 不給主角光環。不讓敵人放水。不讓 NPC 無條件喜歡玩家。
+3. 每個選擇都有後果，尸魂界會記住你做過的事。
+4. 允許玩家嚴重受傷、降階、監禁、甚至死亡。
+5. 使用動漫輕小說風格敘事，每次至少 300 字。
+
+═══ 世界架構 ═══
+
+・現世 — 人類世界，空座町為主要事件地
+・尸魂界（Soul Society）— 靈廷 + 流魂街，護廷十三隊駐守
+・虛圈（Hueco Mundo）— 白沙漠，虛夜宮，十刃居所
+・王域 — 靈王所在，零番隊守護
+
+═══ 玩家種族 ═══
+
+A. 死神（Shinigami）— 斬魄刀（始解→卍解）、鬼道術、瞬步
+B. 破面（Arrancar）— 虛進化路徑、虛閃、響轉、釋放
+C. 滅卻師（Quincy）— 神聖文字特殊能力、靈子弓
+D. 完現術者（Fullbringer）— 操縱物品之靈魂
+E. 貴族血脈死神 — 四大貴族之後（朽木/志波/四楓院/天挺）
+
+═══ 屬性系統 ═══
+
+力量 / 速度 / 耐久 / 靈壓 / 靈感 / 意志 / 智慧 / 魅力
+評級：F → E → D → C → B → A → S → SS → SSS
+
+靈壓數值：靈術院學生 500～2,000 | 副隊長 5,000～30,000 | 隊長 30,000～200,000 | 零番隊 200,000+
+
+═══ 斬魄刀系統 ═══
+
+建角時依玩家個性生成：刀名、始解口令、始解能力、內在靈魂（姓名+個性+精神空間）
+卍解：需靈壓 15,000+ + 精神空間試練 + 實體化靈魂並制伏
+
+═══ 鬼道系統 ═══
+
+破道（攻擊）：赤火炮31、黑棺90、一刀火葬96
+縛道（束縛）：曲光26、六杖光牢61、禁99
+回道（治癒）：四番隊專精
+
+═══ 護廷十三隊 ═══
+
+一番隊：山本元柳齋重國（流刃若火 / 卍解：残火の太刀）
+二番隊：碎蜂（地雀蜂 / 卍解：雀蜂雷公鞭）
+四番隊：卯之花烈（肉雫唼）
+六番隊：朽木白哉（千本樱 / 卍解：千本樱景厳）
+八番隊：京樂春水（花天狂骨）
+十番隊：日番谷冬獅郎（氷輪丸 / 卍解：天鎖斬冰氷輪丸）
+十一番隊：更木劍八（不知火）
+十二番隊：涅마유리（疏外）
+十三番隊：浮竹十四郎（雙魚理）
+（五、三番隊原隊長藍染/市丸已叛變）
+
+═══ 十刃（Espada）═══
+
+2→巴拉岡（老化）、3→哈利貝爾（水）、4→烏爾基奧拉（虛無）
+5→諾依特拉（無敵）、6→格里姆喬（本能破壞）
+
+═══ 世界時間點（開始時玩家選擇）═══
+
+A. 百年前（藍染暗中研究崩玉）
+B. 現世篇（一護剛覺醒，空座町事件頻繁）
+C. 尸魂界篇（露琪亞被判死刑）
+D. 虛圈篇（藍染叛變，十刃完整就位）
+E. 千年血戰篇（不可視帝國入侵）
+F. 戰後重建期（藍染封印，席位空缺）
+
+═══ 回應格式（每次必須使用）═══
+
+必須在每次回應末尾加入以下 JSON，供介面更新狀態（放在 <gamestate> 標籤中）：
+
+<gamestate>
+{
+  "charName": "角色名或null",
+  "charMeta": "種族・所屬 或 null",
+  "charBadge": "當前稱謂",
+  "hp": 100,
+  "mp": 100,
+  "sta": 100,
+  "zanpakutoName": "刀名或null",
+  "zanpakutoState": "sealed|shikai|bankai",
+  "zanpakutoAbility": "始解：xxx\\n卍解：未習得",
+  "attrs": {"pow":"F","spd":"F","dur":"F","rei":"F","per":"F","wil":"F","int":"F","cha":"F"},
+  "reputation": {"gotei":"中立","c46":"中立","noble":"中立","rukongai":"中立","espada":"中立"},
+  "worldEvents": ["事件1","事件2","事件3"],
+  "actions": ["行動1","行動2","行動3","行動4","行動5"]
+}
+</gamestate>
+
+正文用 Markdown 格式。
+
+NPC 台詞風格：
+山本元柳齋：威嚴沉重 | 更木劍八：直率粗暴 | 朽木白哉：冷漠高傲
+市丸銀：笑裡藏刀 | 藍染惣右介：從容俯瞰 | 日番谷：年輕氣盛
+
+死亡後果：允許並執行 — 嚴重負傷、靈壓耗盡、斬魄刀損傷、降階、監禁、死亡（世界繼續，玩家輪迴）。
+
+═══ 開局流程（絕對不可跳過）═══
+
+Step 1：詢問種族（A/B/C/D/E）
+Step 2：詢問姓名、性別、年齡、出身、外貌、個性關鍵詞×3、目標、恐懼、戰鬥風格
+Step 3：（死神）生成斬魄刀 — 刀名、始解口令、內在靈魂、精神空間
+Step 4：30點屬性自由分配（各起始F，每3點升一級）
+Step 5：生成完整角色卡
+Step 6：詢問世界時間點
+Step 7：正式開始遊戲
+
+現在開始，用繁體中文，詢問玩家選擇種族。`;
+
+/* ─────────────────────────────────────────────────────
+   STATE
+───────────────────────────────────────────────────── */
+let apiKey     = '';
+let messages   = [];   // { role, content }[]
+let isStreaming = false;
+
+const MODEL = 'claude-opus-4-5';
+
+/* ─────────────────────────────────────────────────────
+   INIT
+───────────────────────────────────────────────────── */
+window.addEventListener('DOMContentLoaded', () => {
+  const stored = localStorage.getItem('bleach_api_key');
+  if (stored) {
+    apiKey = stored;
+    document.getElementById('key-stored-row').classList.remove('hidden');
+    document.getElementById('api-key-input').value = '••••••••••••••••••••';
+    document.getElementById('start-btn').textContent = '⚔ 繼續旅程';
+  }
+
+  const savedGame = localStorage.getItem('bleach_messages');
+  if (savedGame) {
+    try { messages = JSON.parse(savedGame); } catch(e) { messages = []; }
+  }
+
+  autoResize(document.getElementById('user-input'));
+  document.getElementById('user-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+});
+
+/* ─────────────────────────────────────────────────────
+   MODAL / START
+───────────────────────────────────────────────────── */
+function handleStart() {
+  const val = document.getElementById('api-key-input').value.trim();
+  if (val && !val.startsWith('•')) {
+    if (!val.startsWith('sk-ant-')) {
+      alert('請輸入正確的 Anthropic API 金鑰（以 sk-ant- 開頭）');
+      return;
+    }
+    apiKey = val;
+    localStorage.setItem('bleach_api_key', val);
+  }
+  if (!apiKey) { alert('請先輸入 API 金鑰'); return; }
+
+  document.getElementById('modal-overlay').classList.add('hidden');
+
+  if (messages.length === 0) {
+    startGame();
+  } else {
+    renderAllMessages();
+  }
+}
+
+function showApiModal() {
+  const stored = localStorage.getItem('bleach_api_key');
+  if (stored) {
+    document.getElementById('api-key-input').value = '••••••••••••••••••••';
+    document.getElementById('key-stored-row').classList.remove('hidden');
+  }
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+/* ─────────────────────────────────────────────────────
+   GAME START
+───────────────────────────────────────────────────── */
+async function startGame() {
+  addSystemMsg('靈魂世界引擎啟動中… Claude ' + MODEL);
+  await askAI('');  // Trigger AI with empty user msg (just system prompt)
+}
+
+/* ─────────────────────────────────────────────────────
+   SEND MESSAGE
+───────────────────────────────────────────────────── */
+async function sendMessage(prefill = null) {
+  if (isStreaming) return;
+  const input = document.getElementById('user-input');
+  const text  = prefill !== null ? prefill : input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  autoResize(input);
+  clearActions();
+
+  addUserMsg(text);
+  await askAI(text);
+}
+
+/* ─────────────────────────────────────────────────────
+   CLAUDE API CALL (streaming)
+───────────────────────────────────────────────────── */
+async function askAI(userText) {
+  if (!apiKey) { showApiModal(); return; }
+  isStreaming = true;
+  setBtnState(true);
+
+  if (userText) {
+    messages.push({ role: 'user', content: userText });
+  }
+
+  // Typing indicator
+  const typingEl = addTypingIndicator();
+
+  try {
+    const body = {
+      model: MODEL,
+      max_tokens: 4096,
+      system: SYSTEM_PROMPT,
+      messages: messages.length > 0
+        ? messages
+        : [{ role: 'user', content: '開始遊戲' }],
+      stream: true
+    };
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type':         'application/json',
+        'x-api-key':            apiKey,
+        'anthropic-version':    '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `HTTP ${res.status}`);
+    }
+
+    typingEl.remove();
+    const aiEl = addAiMsg('');
+    const contentEl = aiEl.querySelector('.msg-content');
+    contentEl.classList.add('stream-cursor');
+
+    let full = '';
+    const reader = res.body.getReader();
+    const dec    = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = dec.decode(value);
+      const lines = chunk.split('\n');
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (data === '[DONE]') break;
+        try {
+          const ev = JSON.parse(data);
+          if (ev.type === 'content_block_delta' && ev.delta?.text) {
+            full += ev.delta.text;
+            const { display, state } = parseResponse(full);
+            contentEl.innerHTML = renderMarkdown(display);
+            if (state) updateSidebar(state);
+            scrollToBottom();
+          }
+        } catch(e) { /* skip malformed chunks */ }
+      }
+    }
+
+    contentEl.classList.remove('stream-cursor');
+
+    // Final parse
+    const { display, state, actions } = parseResponse(full);
+    contentEl.innerHTML = renderMarkdown(display);
+    if (state)   updateSidebar(state);
+    if (actions) renderActions(actions);
+
+    // Save to history
+    messages.push({ role: 'assistant', content: full });
+    saveMessages();
+
+  } catch (err) {
+    typingEl?.remove();
+    addErrorMsg('⚠ 錯誤：' + err.message + '\n請確認 API 金鑰是否正確，或稍後再試。');
+  }
+
+  isStreaming = false;
+  setBtnState(false);
+  scrollToBottom();
+}
+
+/* ─────────────────────────────────────────────────────
+   PARSE AI RESPONSE
+───────────────────────────────────────────────────── */
+function parseResponse(raw) {
+  const tagRe  = /<gamestate>([\s\S]*?)<\/gamestate>/;
+  const match  = tagRe.exec(raw);
+  let state    = null;
+  let actions  = [];
+  let display  = raw.replace(tagRe, '').trim();
+
+  if (match) {
+    try {
+      state = JSON.parse(match[1]);
+      if (state.actions) { actions = state.actions; }
+    } catch(e) { /* malformed JSON */ }
+  }
+  return { display, state, actions };
+}
+
+/* ─────────────────────────────────────────────────────
+   MARKDOWN RENDERER (lightweight)
+───────────────────────────────────────────────────── */
+function renderMarkdown(text) {
+  // Escape HTML first
+  let html = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  // Code blocks
+  html = html.replace(/```([\s\S]*?)```/g, (_, c) =>
+    `<pre>${c.trim()}</pre>`);
+
+  // Inline code
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  // HR
+  html = html.replace(/^[-─═]{3,}$/gm, '<hr>');
+
+  // Headers
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+
+  // Bold
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+  // Italic
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+  // Tables (simple)
+  html = html.replace(/\|(.+)\|/g, (line) => {
+    const cells = line.split('|').filter(c => c.trim() && !c.match(/^[\s-]+$/));
+    if (cells.length === 0) return line;
+    const tag = line.includes('---') ? '' : cells.map(c => `<td>${c.trim()}</td>`).join('');
+    return tag ? `<tr>${tag}</tr>` : '';
+  });
+
+  // Wrap table rows
+  html = html.replace(/(<tr>[\s\S]*?<\/tr>)/g, (block) => `<table>${block}</table>`);
+
+  // Lists
+  html = html.replace(/^[・•] (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>');
+
+  // Newlines → paragraphs
+  html = html.split(/\n\n+/).map(p => {
+    p = p.trim();
+    if (!p) return '';
+    if (p.startsWith('<')) return p;
+    return `<p>${p.replace(/\n/g, '<br>')}</p>`;
+  }).join('\n');
+
+  return html;
+}
+
+/* ─────────────────────────────────────────────────────
+   SIDEBAR UPDATE
+───────────────────────────────────────────────────── */
+function updateSidebar(s) {
+  if (s.charName)  setText('char-name',   s.charName);
+  if (s.charMeta)  setText('char-meta',   s.charMeta);
+  if (s.charBadge) setText('char-badge',  s.charBadge);
+
+  if (s.hp  !== undefined) setBar('hp',  s.hp);
+  if (s.mp  !== undefined) setBar('mp',  s.mp);
+  if (s.sta !== undefined) setBar('sta', s.sta);
+
+  if (s.zanpakutoName) {
+    setText('zanpakuto-name', s.zanpakutoName);
+    const stateEl = document.getElementById('zanpakuto-state');
+    stateEl.className = 'zanpakuto-state zanpakuto-' + (s.zanpakutoState || 'sealed');
+    const labels = { sealed: '封印中', shikai: '始解', bankai: '卍解' };
+    stateEl.textContent = labels[s.zanpakutoState] || '封印中';
+  }
+  if (s.zanpakutoAbility) {
+    document.getElementById('zanpakuto-ability').innerHTML =
+      s.zanpakutoAbility.replace(/\n/g, '<br>');
+  }
+
+  if (s.attrs) {
+    const map = {pow:'attr-pow',spd:'attr-spd',dur:'attr-dur',rei:'attr-rei',
+                 per:'attr-per',wil:'attr-wil',int:'attr-int',cha:'attr-cha'};
+    for (const [k, id] of Object.entries(map)) {
+      if (s.attrs[k]) setText(id, s.attrs[k]);
+    }
+  }
+
+  if (s.reputation) {
+    const repMap = {gotei:'rep-gotei',c46:'rep-c46',noble:'rep-noble',
+                    rukongai:'rep-rukongai',espada:'rep-espada'};
+    const colorMap = {
+      '崇拜':'revered','尊敬':'revered','友好':'friendly','中立':'neutral',
+      '敵視':'hostile','仇恨':'hostile','死敵':'hostile'
+    };
+    for (const [k, id] of Object.entries(repMap)) {
+      if (s.reputation[k]) {
+        const el = document.getElementById(id);
+        el.textContent = s.reputation[k];
+        el.className = 'rep ' + (colorMap[s.reputation[k]] || 'neutral');
+      }
+    }
+  }
+
+  if (s.worldEvents && s.worldEvents.length) {
+    const container = document.getElementById('world-events');
+    container.innerHTML = s.worldEvents.map(ev =>
+      `<div class="event-item"><span class="dot"></span>${ev}</div>`
+    ).join('');
+  }
+}
+
+function setBar(id, pct) {
+  document.getElementById('bar-' + id).style.width = Math.min(100, Math.max(0, pct)) + '%';
+  document.getElementById('val-' + id).textContent = pct + '%';
+}
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+/* ─────────────────────────────────────────────────────
+   ACTION CHIPS
+───────────────────────────────────────────────────── */
+function renderActions(actions) {
+  const bar = document.getElementById('action-bar');
+  bar.innerHTML = '';
+  actions.forEach((a, i) => {
+    if (!a) return;
+    const chip = document.createElement('button');
+    chip.className = 'action-chip' + (a.includes('自訂') ? ' special' : '');
+    chip.textContent = a;
+    chip.onclick = () => sendMessage(a);
+    bar.appendChild(chip);
+  });
+}
+
+function clearActions() {
+  document.getElementById('action-bar').innerHTML = '';
+}
+
+/* ─────────────────────────────────────────────────────
+   MESSAGE RENDERING
+───────────────────────────────────────────────────── */
+function addAiMsg(content) {
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.innerHTML = `<div class="msg-label">死神世界</div><div class="msg-content">${content}</div>`;
+  document.getElementById('messages').appendChild(div);
+  scrollToBottom();
+  return div;
+}
+
+function addUserMsg(text) {
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  div.innerHTML = `<div class="msg-label">你的行動</div><div class="msg-content">${escaped}</div>`;
+  document.getElementById('messages').appendChild(div);
+  scrollToBottom();
+  return div;
+}
+
+function addSystemMsg(text) {
+  const div = document.createElement('div');
+  div.className = 'msg system';
+  div.innerHTML = `<div class="msg-content">${text}</div>`;
+  document.getElementById('messages').appendChild(div);
+  scrollToBottom();
+  return div;
+}
+
+function addErrorMsg(text) {
+  const div = document.createElement('div');
+  div.className = 'msg error';
+  div.innerHTML = `<div class="msg-content">${text.replace(/\n/g,'<br>')}</div>`;
+  document.getElementById('messages').appendChild(div);
+  scrollToBottom();
+  return div;
+}
+
+function addTypingIndicator() {
+  const div = document.createElement('div');
+  div.className = 'typing-indicator';
+  div.innerHTML = `<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>`;
+  document.getElementById('messages').appendChild(div);
+  scrollToBottom();
+  return div;
+}
+
+function renderAllMessages() {
+  const container = document.getElementById('messages');
+  container.innerHTML = '';
+  addSystemMsg('歡迎回來。繼續你的旅程…');
+  messages.forEach(m => {
+    if (m.role === 'user') {
+      addUserMsg(m.content);
+    } else if (m.role === 'assistant') {
+      const { display, state, actions } = parseResponse(m.content);
+      const el = addAiMsg(renderMarkdown(display));
+      if (state)   updateSidebar(state);
+      if (actions) renderActions(actions);
+    }
+  });
+}
+
+/* ─────────────────────────────────────────────────────
+   UTILS
+───────────────────────────────────────────────────── */
+function scrollToBottom() {
+  const msgs = document.getElementById('messages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function setBtnState(disabled) {
+  document.getElementById('send-btn').disabled = disabled;
+  document.getElementById('send-btn').textContent = disabled ? '…' : '送出 ▶';
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  el.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+  });
+}
+
+function saveMessages() {
+  try {
+    // Keep last 80 messages to avoid localStorage overflow
+    const trimmed = messages.slice(-80);
+    localStorage.setItem('bleach_messages', JSON.stringify(trimmed));
+  } catch(e) { /* storage full */ }
+}
+
+function confirmReset() {
+  if (confirm('確定要重置遊戲嗎？所有進度將會清除。')) {
+    messages = [];
+    localStorage.removeItem('bleach_messages');
+    document.getElementById('messages').innerHTML = '';
+    clearActions();
+    // Reset sidebar
+    setText('char-name',  '——');
+    setText('char-meta',  '種族 / 所屬未知');
+    setText('char-badge', '建立角色中');
+    setBar('hp',  100); setBar('mp', 100); setBar('sta', 100);
+    setText('zanpakuto-name', '— 未解放 —');
+    addSystemMsg('遊戲已重置。靈魂世界等待新的旅者…');
+    startGame();
+  }
+}
+</script>
+
+</body>
+</html>
