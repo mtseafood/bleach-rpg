@@ -605,20 +605,235 @@ const STORY = {
       {t:'h2', x:'第一章・完'},
       {t:'n', x:'<emph>—— 你成為了代理死神，與十三番隊的霜月凛，締結了奇妙的契約。</emph>'},
       {t:'n', x:'空座町的虛只是開始。流魂街的陰影、護廷十三隊的算計、以及凛被剝奪力量後將面臨的命運……一場席捲三界的風暴，正在地平線那端悄然成形。'},
-      {t:'think', x:'（第二章・敬請期待）'}
+      {t:'think', x:'—— 但這份平靜，不會持續太久。'}
     ],
     choices:[
-      { c:'☆ 查看你的第一章旅程總結', tag:'結算', to:'__summary__', fx:{}, ev:'' },
-      { c:'↺ 從頭再玩一次，嘗試不同的選擇', tag:'重玩', to:'__restart__', fx:{}, ev:'' }
+      { c:'前往第二章 ——「奪命的使者」', to:'c2_00', fx:{}, ev:'' },
+      { c:'☆ 先查看你的第一章旅程總結', to:'__summary__', fx:{}, ev:'' }
+    ]
+  },
+
+  /* ══════════════════════════════════════════════════════
+     CHAPTER 2 — 奪命的使者 / The Deadly Envoys
+  ══════════════════════════════════════════════════════ */
+
+  /* ───── 一個月後・日常 ───── */
+  c2_00: {
+    chapter:2, time:'午後 16:20', place:'空座町・住宅區', rei:'稀薄',
+    progress:0, restore:true, setState:{reiatsu:600},
+    badge:'代理死神', charMeta:'代理死神・空座町',
+    events:['距覺醒之夜，已過一個月','空座町的虛，由你親手清除','一切看似步上正軌'],
+    text:[
+      {t:'chapter', x:'CHAPTER TWO'},
+      {t:'h2', x:'奪命の使者'},
+      {t:'n', x:'一個月，過得比想像中還快。'},
+      {t:'n', x:'自從那一夜成為代理死神後，你的生活被徹底切成了兩半。白天，你是空座町第一高中再普通不過的學生；入夜，你便提著那柄巨大的斬魄刀，在城鎮的屋頂之間奔馳，斬除每一隻潛入現世的虛。'},
+      {t:'n', x:'起初你連站都站不穩，靈壓暴走得像脫韁野馬。但一個月下來，你已經能精準地壓縮、收放體內那股橙金色的力量，瞬步的殘影也越來越俐落。'},
+      {t:'dialog', x:'「靈壓收束再快零點五秒。你的反應跟不上你的力量，這是會送命的壞習慣。」'},
+      {t:'n', x:'坐在你書桌上、晃著腿的，正是<emph>霜月凛</emph>。自從把大半力量都灌進你體內後，她就一直維持著普通靈魂的虛弱狀態，暫時回不了尸魂界，索性賴在你家的衣櫥裡住下，順便擔起了你「教官」的職務——嘴上嫌棄，卻一個動作都不肯馬虎。'},
+      {t:'think', x:'這一個月……說不累是騙人的。但奇怪的是，我一點都不想回到從前那個「假裝看不見」的自己了。'},
+      {t:'n', x:'夕陽斜照進房間。凛抬起頭，看了你一眼。'},
+      {t:'dialog', x:'「今天，想練什麼？」'}
+    ],
+    choices:[
+      { c:'「陪我做靈壓控制的對練吧，我想把那零點五秒補回來。」', to:'c2_predict', fx:{calm:2}, ev:'你選擇與凛對練' },
+      { c:'「昨晚廢工廠那邊有虛的殘留氣息，我去巡一趟。」', to:'c2_predict', fx:{courage:2, sense:1}, ev:'你決定外出巡邏' },
+      { c:'「我想試試……和我體內那把刀『對話』。」', to:'c2_predict', fx:{sense:3}, ev:'你嘗試傾聽斬魄刀之聲', flag:{c2_listen:1} }
+    ]
+  },
+
+  /* ───── 異變的預兆 ───── */
+  c2_predict: {
+    chapter:2, time:'黃昏 17:30', place:'空座町・住宅區', rei:'稀薄→驟變',
+    progress:1, events:['天空被撕開了兩道裂縫','兩股龐大的靈壓，自尸魂界降臨','凛的臉色，瞬間變得慘白'],
+    fb:{type:'bad', v:'凛從未在你面前露出過這種表情——那是恐懼。'},
+    text:[
+      {t:'n', x:'你正準備依著計畫行動，凛卻忽然<emph>整個人僵住了</emph>。'},
+      {t:'n', x:'她猛地站起身，望向窗外的天空。你順著她的視線看去——黃昏的天幕上，憑空裂開了兩道<danger>幽暗的裂縫</danger>，彷彿有人用刀劃破了世界的布幕。緊接著，兩股沉重、精純、冷冽到令人窒息的靈壓，如同兩座無形的山岳，轟然壓向整座空座町。'},
+      {t:'n', x:'你幾乎是立刻就被壓得單膝跪地，呼吸困難。這股靈壓的「質量」，和你至今斬過的任何一隻虛都<emph>完全不同</emph>——那是更高級、更秩序化、也更致命的存在。'},
+      {t:'dialog', x:'「這個靈壓……是<emph>死神</emph>。」凛的聲音在發抖，「而且是兩個……兩個都強得不像話。糟了，他們是衝著我來的——比我預想的早太多了。」'},
+      {t:'think', x:'衝著凛來的？死神追殺死神……為什麼？'},
+      {t:'n', x:'凛轉過頭，銀灰色的眼眸裡，第一次盛滿了你看不懂的、沉重的東西。'},
+      {t:'dialog', x:'「聽我說。把死神的力量交給人類，在尸魂界是<danger>不可饒恕的重罪</danger>。他們是來抓我回去問罪的。<emph>你必須躲起來</emph>，把靈壓壓到最低，絕對不能讓他們發現你——」'}
+    ],
+    choices:[
+      { c:'「我不躲。妳為了救我才落到這個地步，我陪妳一起面對。」', to:'c2_envoys', fx:{courage:3, bond:2}, ev:'你拒絕躲藏', flag:{c2_standWithRin:1} },
+      { c:'「先冷靜。搞清楚他們的來歷和規矩，才有談判的餘地。」', to:'c2_envoys', fx:{calm:3, sense:1}, ev:'你試圖保持冷靜' },
+      { c:'什麼都沒說，握緊斬魄刀，走向靈壓的來源。', to:'c2_envoys', fx:{courage:2, calm:1}, ev:'你默默迎向強敵' }
+    ]
+  },
+
+  /* ───── 奪命的使者登場 ───── */
+  c2_envoys: {
+    chapter:2, time:'黃昏 17:40', place:'空座町・河堤', rei:'濃密',
+    progress:2, events:['兩名護廷十三隊的死神現身','六番隊副隊長・白羽玲二','十一番隊第四席・牙王'],
+    fb:{type:'neutral', v:'真正的死神，與你這個「贗品」之間的距離，近在眼前。'},
+    text:[
+      {t:'n', x:'你和凛趕到河堤——正是一個月前你覺醒的地方。兩道身影已等在那裡，正是這片天地壓迫感的來源。'},
+      {t:'n', x:'右邊那人身形高大如鐵塔，肩寬背厚，臉上橫著一道猙獰的舊疤，咧嘴笑著，露出尖利的牙，腰間佩著一柄寬厚的大刀。左邊那人則截然相反——身姿挺拔如松，一身死神制服一絲不苟，左臂繫著<emph>六番隊副隊長的臂章</emph>，面容俊冷，眼神像結了冰的湖，連看你一眼都嫌多餘。'},
+      {t:'dialog', x:'「霜月凛。」冷面的副隊長開口，聲音平淡卻字字如刀，「我是六番隊副隊長，<emph>白羽玲二</emph>。奉命緝拿你歸案。你將死神之力授予人類，違反中央四十六室律令第二條，依規押解回尸魂界候審。束手就擒，免受皮肉之苦。」'},
+      {t:'dialog', x:'「嘿，那這小鬼呢？」高大的死神——牙王——興奮地舔了舔嘴角，黃疸般的視線釘在你身上，「就是他偷了妳的力量吧？玲二，這小子身上的靈壓……挺有意思的嘛。」'},
+      {t:'n', x:'白羽的視線終於落到你身上，冰冷而漠然，像在打量一件待處理的瑕疵品。'},
+      {t:'dialog', x:'「人類持有死神之力，本身即是罪。這股偷來的力量，要嘛由我們收回，要嘛……連同持有者一併抹消。」'},
+      {t:'n', x:'凛猛地擋到你身前，張開雙臂。'},
+      {t:'dialog', x:'「我跟你們走！罪在我一人，與他無關——放過他！」'},
+      {t:'think', x:'她又來了。又想一個人把所有事情扛下來。'}
+    ],
+    choices:[
+      { c:'一把將凛拉到身後：「要抓她，先問過我手裡這把刀。」', to:'c2_clash', fx:{courage:4, bond:2}, ev:'你擋到凛身前', flag:{c2_shield:1} },
+      { c:'「候審——意思是還沒定罪。你們憑什麼現在就要『抹消』人？」', to:'c2_clash', fx:{calm:3, sense:2}, ev:'你冷靜地質問律法漏洞', flag:{c2_argue:1} },
+      { c:'不等對方回話，瞬步搶上、一刀劈向牙王。', to:'c2_clash', fx:{courage:3, sta:-10}, ev:'你先發制人襲向牙王', flag:{c2_rush:1} }
+    ]
+  },
+
+  /* ───── 無法跨越的牆 ───── */
+  c2_clash: {
+    chapter:2, time:'黃昏 17:48', place:'空座町・河堤', rei:'異常濃密',
+    progress:3, events:['你與牙王激烈交鋒','你的成長，連敵人都認可','但真正的高牆，尚未顯現'],
+    text:[
+      {t:'n', x:'牙王大笑著迎上來。'},
+      {t:'dialog', x:'「好啊好啊！這才對嘛——比起押送犯人，老子可有興趣多了！」'},
+      {t:'n', x:'他的大刀帶著破風之聲狠狠斬下，你橫刀格擋，巨力震得手臂發麻、雙腳陷進柏油。但你沒有退——這一個月的苦練在此刻化為本能，你借力卸力，瞬步繞到他側翼，回手一刀在他臂上劃出血痕。'},
+      {t:'n', x:'牙王低頭看了看傷口，非但不怒，反而笑得更開心了。'},
+      {t:'dialog', x:'「哈！才一個月就能在老子身上見血？小鬼，你是塊好料子！要是讓你進了十一番隊，遲早能打到席官——」'},
+      {t:'dialog', x:'「牙王。夠了。」'},
+      {t:'n', x:'冷冽的聲音響起。下一個剎那，你的<danger>背脊竄起一陣劇烈的寒意</danger>——白羽玲二，不見了。'},
+      {t:'n', x:'不。是你的眼睛<emph>完全跟不上他的速度</emph>。當你勉強捕捉到殘影時，他已經出現在你身後半步之遙，刀已出鞘，冰冷的刃光正貼著你的後頸。那一瞬間你才真正理解——你和牙王的交手，不過是熱身；而眼前這個男人，根本是另一個次元的存在。'},
+      {t:'think', x:'快得……看不見。這就是『副隊長』？這就是真正的死神之間的差距嗎——？'}
+    ],
+    choices:[
+      { c:'強行擰身，憑直覺向身後揮出全力一刀。', to:'c2_defeat', fx:{courage:3, sta:-15}, ev:'你強行回身揮刀' },
+      { c:'閉上眼，用這一個月磨出的靈感去「感覺」他的軌跡。', req:{sense:6}, to:'c2_defeat', fx:{sense:2, sta:-10}, ev:'你以靈感捕捉白羽的刀路', flag:{c2_read:1} },
+      { c:'不管自己，回身撲向被牙王盯上的凛。', req:{bond:4}, to:'c2_defeat', fx:{bond:2, hp:-10}, ev:'你拋下防禦撲向凛', flag:{c2_reachRin:1} }
+    ]
+  },
+
+  /* ───── 潰敗 ───── */
+  c2_defeat: {
+    chapter:2, time:'黃昏 17:52', place:'空座町・河堤', rei:'異常濃密',
+    progress:4, setState:{hp:12, sta:8},
+    badge:'敗北者', events:['你被白羽一刀斬落','凛被押往尸魂界','絕望，籠罩了河堤'],
+    fb:{type:'bad', v:'力量的鴻溝，是如此真實而殘酷。'},
+    text:[
+      {t:'cond', read:[
+        {t:'n', x:'你閉上眼，將意識沉入這一個月來無數次淬鍊的靈感之中。世界的聲音遠去了，你「看見」了——白羽那柄刀劃過空氣的軌跡，像一道清晰的銀線。'},
+        {t:'n', x:'你的身體先於思考動了起來，刀尖堪堪迎上那道銀線。鏗——！火花四濺。你擋下了。雖然只擋下了一瞬，雖然下一刀的反震就讓你口噴鮮血、單膝跪地，但你<emph>確實在白羽玲二的臉頰上，留下了一道淺淺的血痕</emph>。'},
+        {t:'n', x:'白羽抬手摸了摸臉頰，指尖沾上一抹紅。他冰封般的眼底，極其罕見地閃過一絲<emph>訝異</emph>。'},
+        {t:'dialog', x:'「……一個只有一個月道行的人類，能擋下我的一刀，還能反傷我。」他垂眸看你，語氣依舊冷漠，卻多了一分極淡的、近乎審視的認真，「可惜，立場不容我留情。」'}
+      ], def:[
+        {t:'n', x:'你拼盡全力擰身揮刀。但那一刀，斬中的只有殘影。'},
+        {t:'n', x:'白羽的身形如鬼魅般滑過你的攻擊範圍，乾淨、精準、不帶一絲多餘。你甚至沒看清他何時出的手。'}
+      ]},
+      {t:'n', x:'「靈壓懸殊到這種地步還想頑抗，是勇氣，也是愚蠢。」'},
+      {t:'n', x:'白羽的刀光一閃。一道熾烈的劇痛從你胸前炸開，鮮血濺灑在暮色的河堤上。你像斷線的人偶般飛出去，重重砸在地上，斬魄刀脫手，手腳再也使不出半分力氣。'},
+      {t:'dialog', x:'「<NAME>——！」凛的尖叫撕心裂肺。她想衝過來，卻被牙王一把扣住，動彈不得。'},
+      {t:'n', x:'白羽收刀入鞘，居高臨下地俯視倒在血泊中的你，眼神沒有一絲波瀾。'},
+      {t:'dialog', x:'「人類。你的力量是偷來的贗品，本就不該存在。我原該斬草除根，但……」他瞥了一眼你不斷流失的靈壓，「你已是將死之人，無需我多費刀刃。」'},
+      {t:'n', x:'牙王身後的空間裂開一道幽暗的<emph>穿界門</emph>。凛被拖了進去，她拼命掙扎，朝你伸出手，淚水在風中碎裂。'},
+      {t:'dialog', x:'「拜託你——<emph>活下去</emph>！不要來找我，給我好好地、活下去——！」'},
+      {t:'n', x:'門，緩緩闔上。靈壓消散。河堤上，只剩下渾身是血、漸漸看不清天色的你。'},
+      {t:'think', x:'別……別走……我好不容易，才有了想守護的東西……'}
+    ],
+    choices:[
+      { c:'用盡最後力氣，向那道消失的門伸出顫抖的手。', to:'c2_saved', fx:{}, ev:'你向闔上的門伸手' },
+      { c:'在意識墜入黑暗前，嘶吼出她的名字。', to:'c2_saved', fx:{courage:1}, ev:'你嘶吼著凛的名字' },
+      { c:'撐著斬魄刀，拒絕倒下——哪怕只是再站起一公分。', req:{courage:10}, to:'c2_saved', fx:{courage:2}, ev:'你拒絕倒下', flag:{c2_unbroken:1} }
+    ]
+  },
+
+  /* ───── 黑暗中的手 ───── */
+  c2_saved: {
+    chapter:2, time:'夜 21:00', place:'空座町・黑丸雜貨堂', rei:'稀薄',
+    progress:5, setState:{hp:30, mp:40, sta:35},
+    badge:'倖存者', events:['一隻手，將你從死亡邊緣拉回','黑丸雜貨堂的老闆・黑丸玄','他知道關於凛的一切'],
+    fb:{type:'good', v:'在你以為一切都結束時，命運遞來了第二把鑰匙。'},
+    text:[
+      {t:'n', x:'就在你的意識即將徹底沉沒時，一個慵懶的、帶著笑意的男聲，從頭頂飄了下來。'},
+      {t:'dialog', x:'「哎呀哎呀，傷得這麼重還不肯閉眼，年輕人的執念可真嚇人吶。」'},
+      {t:'n', x:'一隻戴著木屐的腳出現在你模糊的視野邊緣。那是個穿著綠色條紋外衣、頭戴條紋帽、下巴留著鬍渣的男人，搖著一把破扇子，臉上掛著看不出深淺的笑。他蹲下身，將一隻手按在你的傷口上——一股溫潤的靈壓滲入體內，狂湧的血，奇蹟般地止住了。'},
+      {t:'n', x:'……再次睜開眼時，你躺在一間瀰漫著藥草味的雜貨店地板上，傷口已被仔細包紮。那個怪男人盤腿坐在你面前，用扇子搧著風。'},
+      {t:'dialog', x:'「醒啦？歡迎光臨『黑丸雜貨堂』。我是老闆，<emph>黑丸玄</emph>。」他笑瞇瞇地，「以前嘛……也算是個死神。如今是個賣糖果汽水的普通人囉。」'},
+      {t:'think', x:'以前是死神……這個人，絕不簡單。他止血時那股靈壓的精純度，甚至不在白羽之下。'},
+      {t:'dialog', x:'「我知道你想問什麼。霜月凛那丫頭，被押回尸魂界了。」黑丸玄收起笑容，扇子一合，「『將力量授予人類』這條罪，在中央四十六室眼裡可不輕。照他們一貫的作風……她大概只剩<danger>一個月不到的時間</danger>，就會被押上刑場。」'},
+      {t:'n', x:'你掙扎著想坐起來，牽動傷口，痛得倒抽一口氣。'},
+      {t:'dialog', x:'「別急。」黑丸玄按住你，目光忽然變得銳利如鷹，「你現在這副半死不活的樣子衝去尸魂界，只是給人添一具屍體。你體內凛的力量，被白羽那一刀斬得七零八落，正在崩解——這也是你剛才差點沒命的真正原因。」'},
+      {t:'dialog', x:'「但是呢……」他咧嘴一笑，那笑容裡藏著某種瘋狂的期待，「我有辦法。讓你拋掉那份『借來的力量』，把你自己<emph>真正的死神之力</emph>，從靈魂最深處挖出來。代價是——這個過程，痛得足以讓你死上好幾回。怎麼樣，要試試嗎？」'}
+    ],
+    choices:[
+      { c:'「教我。不管多痛、要死幾次，我都要變強，去把她奪回來。」', to:'c2_resolve', fx:{courage:4, bond:1}, ev:'你毫不猶豫地答應修行', flag:{c2_train:1} },
+      { c:'「為什麼……你要幫一個素不相識的我？」', to:'c2_resolve', fx:{sense:3, calm:1}, ev:'你追問黑丸玄的動機', flag:{c2_askWhy:1} },
+      { c:'一言不發地撐起身，撿起斬魄刀——你的眼神，就是答案。', to:'c2_resolve', fx:{calm:3, courage:1}, ev:'你以行動表明覺悟', flag:{c2_silent:1} }
+    ]
+  },
+
+  /* ───── 覺悟之刻 ───── */
+  c2_resolve: {
+    chapter:2, time:'三日後・拂曉', place:'黑丸雜貨堂・地下修練場', rei:'濃密',
+    progress:6, setState:{hp:85, mp:90, sta:90, reiatsu:900},
+    badge:'修行者', events:['地下，藏著一片廣闊的修練空間','三日煉獄般的特訓','你體內的力量，開始質變'],
+    fb:{type:'good', v:'真正屬於你的力量，正在甦醒。'},
+    text:[
+      {t:'cond', askWhy:[
+        {t:'n', x:'黑丸玄聞言，扇子搖得更慢了，眼神飄向遠方，像是望進了某段久遠的往事。'},
+        {t:'dialog', x:'「為什麼啊……大概是因為，我這個老頭子，當年也曾為了救一個重要的人，跟整個尸魂界作對過吧。」他自嘲地笑了笑，「看見你，就像看見年輕時那個不知天高地厚的自己。算我多管閒事——也算，替當年的自己，再賭一次。」'}
+      ], silent:[
+        {t:'n', x:'黑丸玄看著你撐起傷軀、撿刀而立的模樣，先是一愣，隨即放聲大笑。'},
+        {t:'dialog', x:'「哈哈哈！好眼神！這種眼神我太熟悉了——是不把命當回事、卻又比誰都渴望活下去的眼神。行，這樣的傢伙，值得我下本錢。」'}
+      ], def:[
+        {t:'n', x:'黑丸玄滿意地點點頭，一把將你從地上拽起。'},
+        {t:'dialog', x:'「乾脆。我最欣賞乾脆的年輕人了。」'}
+      ]},
+      {t:'n', x:'他領你走進雜貨堂後方一道不起眼的暗門。門後是一道向下的長梯，盡頭——竟是一片<emph>廣闊到看不見邊際的岩石荒原</emph>，頭頂是人造的藍天，遠處矗立著嶙峋的岩柱。這片不可思議的空間，整個藏在那間小小雜貨店的地下。'},
+      {t:'dialog', x:'「在這裡，你不用顧慮弄壞現世的東西。」黑丸玄拋給你一根木劍，扇子一收，氣勢陡然一變，方才那股慵懶蕩然無存，取而代之的是深不見底的強者威壓，「特訓只有一個規則——在我把你打死之前，先把你『真正的力量』給逼出來。準備好了嗎，代理死神？」'},
+      {t:'n', x:'接下來的三天，是你人生中最漫長、最痛苦的三天。你被打飛了無數次，吐血、骨裂、靈壓枯竭到極限……但每一次，當你想起凛伸向你的那隻手，想起她「活下去」的呼喊，你就會重新爬起來。'},
+      {t:'cond', bondHigh:[
+        {t:'n', x:'而支撐你撐過這一切的，是那份早已超越「契約」的羈絆。你想起與凛相處的每一個日夜——她嫌棄你的笨拙，卻又一遍遍不厭其煩地指導；她嘴上說著規矩，卻為了你違抗了整個尸魂界。<emph>「這次，換我去救妳。」</emph>這個念頭，化作灼熱的力量，從你靈魂的最深處轟然噴湧而出。'}
+      ], def:[
+        {t:'n', x:'到了第三天的拂曉，當黑丸玄的木劍再次當頭劈下時，你體內某樣東西，終於<emph>應聲碎裂、重生</emph>——那份借來的、不穩定的力量徹底剝落，取而代之的，是真正屬於你自己的、沉穩而磅礴的靈壓。'}
+      ]},
+      {t:'n', x:'黑丸玄的木劍，被你赤手接住了。他望著你眼中煥然一新的光芒，緩緩地、滿意地笑了。'},
+      {t:'dialog', x:'「……成了。歡迎回來，這一次，是『真貨』了。」'}
+    ],
+    choices:[
+      { c:'握緊重生的力量，望向通往尸魂界的方向。', to:'c2_end', fx:{courage:2, calm:1}, ev:'你凝視尸魂界的方向' }
+    ]
+  },
+
+  /* ───── 第二章結尾 ───── */
+  c2_end: {
+    chapter:2, time:'拂曉', place:'黑丸雜貨堂・地下修練場', rei:'恢復',
+    progress:7, setState:{hp:100, mp:100, sta:100, reiatsu:1500},
+    badge:'挑戰尸魂界者', charMeta:'代理死神・即將潛入尸魂界',
+    events:['第二章・完','一道通往尸魂界的門，即將開啟','救援的倒數，開始了'],
+    fb:{type:'good', v:'你不再是那個被輕易斬落的贗品。真正的戰鬥，現在才要開始。'},
+    text:[
+      {t:'n', x:'修練場中央，黑丸玄將手中那把破扇子重重插入地面。剎那間，地面綻開一圈古老的紋路，一道由四根巨大木柱與光幕構成的<emph>巨門</emph>，自虛空中緩緩升起，門後翻湧著通往另一個世界的、純白的光流。'},
+      {t:'dialog', x:'「這是『穿界門』。撐開它要耗掉我老命的一大半，所以——」黑丸玄轉過頭，扇子指著你，臉上是那抹一貫的、高深莫測的笑，「只有一次機會。門後就是尸魂界。穿過那道淨白的光，你就會落在<emph>流魂街</emph>——死神與靈魂聚居的世界。」'},
+      {t:'dialog', x:'「記住，尸魂界不是現世。那裡有護廷十三隊、有四大貴族、有比白羽強上十倍百倍的怪物。你要面對的，是整個體制。」他頓了頓，「……不過，你也不會是孤身一人。有些傢伙，會在那裡等著與你並肩。這是後話了。」'},
+      {t:'n', x:'你最後望了一眼這片曾將你淬鍊重生的荒原，握緊腰間屬於你自己的斬魄刀。它的重量，比一個月前更沉，也更令你安心。'},
+      {t:'think', x:'霜月凛。等我。'},
+      {t:'think', x:'這一次，輪到我，闖進妳的世界了。'},
+      {t:'n', x:'你深吸一口氣，邁步踏入那道純白的光門。光芒吞沒了你的身影——前方，是名為「尸魂界」的、全新的戰場。'},
+      {t:'n', x:''},
+      {t:'h2', x:'第二章・完'},
+      {t:'n', x:'<emph>—— 你捨棄了借來的力量，以真正的死神之力重生，踏上了潛入尸魂界、奪回霜月凛的救援之路。</emph>'},
+      {t:'n', x:'流魂街的塵土、靈廷高聳的白牆、護廷十三隊森嚴的軍勢，以及那場一個月後的處刑……命運的齒輪，正轟然轉向更宏大的舞台。'},
+      {t:'think', x:'（第三章「流魂街篇」——你的故事，未完待續。）'}
+    ],
+    choices:[
+      { c:'☆ 查看你的第二章旅程總結', to:'__summary2__', fx:{}, ev:'' },
+      { c:'↺ 從第一章重新開始，譜寫不同的命運', to:'__restart__', fx:{}, ev:'' }
     ]
   }
 };
 
-/* 進度節點標籤 */
-const PROGRESS_LABELS = [
-  '放學路上','岔路抉擇','遇見迷途之魂','虛的逼近','直面恐懼',
-  '死神降臨','生死一線','力量的代價','覺醒之刃','第一章・完'
-];
+/* 章節進度節點標籤 */
+const CHAPTERS = {
+  1: ['放學路上','岔路抉擇','遇見迷途之魂','虛的逼近','直面恐懼',
+      '死神降臨','生死一線','力量的代價','覺醒之刃','第一章・完'],
+  2: ['平靜的日常','異變的預兆','奪命的使者','無法跨越的牆','潰敗',
+      '黑暗中的手','覺悟之刻','第二章・完']
+};
 
 /* ════════════════════════════════════════════════════════
    ENGINE
@@ -655,6 +870,8 @@ function renderNode(id) {
   if (!S.visited.includes(id)) S.visited.push(id);
 
   // node-enter state
+  if (node.restore) { S.hp = 100; S.mp = 100; S.sta = 100; }
+  if (node.setState) { for (const k of ['hp','mp','sta','reiatsu']) if (node.setState[k] !== undefined) S[k] = node.setState[k]; }
   if (node.reiatsuSet) S.reiatsu = node.reiatsuSet;
   if (node.badge) S.badge = node.badge;
   if (node.charMeta) S.charMeta = node.charMeta;
@@ -676,22 +893,11 @@ function renderNode(id) {
   if (node.fb) {
     const fb = document.createElement('div');
     fb.className = 'feedback ' + (node.fb.type === 'bad' ? 'bad' : node.fb.type === 'neutral' ? 'neutral' : '');
-    fb.innerHTML = `<span class="fk">${node.fb.k}</span> — ${node.fb.v}`;
+    fb.innerHTML = node.fb.v;
     story.appendChild(fb);
   }
 
-  node.text.forEach(seg => {
-    let el;
-    if (seg.t === 'chapter') { el = document.createElement('div'); el.className = 'chapter-tag'; el.textContent = seg.x; }
-    else if (seg.t === 'h2') { el = document.createElement('h2'); el.textContent = seg.x; }
-    else {
-      el = document.createElement('p');
-      const cls = { n:'narration', dialog:'dialog', think:'thought', spirit:'spirit-line' }[seg.t] || 'narration';
-      el.className = cls;
-      el.innerHTML = seg.x.replace(/<NAME>/g, `<span class="emph">${S.name}</span>`);
-    }
-    wrap.appendChild(el);
-  });
+  renderSegs(node.text, wrap);
   story.appendChild(wrap);
 
   // world events
@@ -705,24 +911,56 @@ function renderNode(id) {
   story.scrollTop = 0;
 }
 
+/* 條件式劇情段落：依旗標／數值選擇分支文字 */
+const SEG_CONDS = {
+  read:     () => !!S.flags.c2_read,
+  askWhy:   () => !!S.flags.c2_askWhy,
+  silent:   () => !!S.flags.c2_silent,
+  bondHigh: () => S.bond >= 8
+};
+
+function transformText(s) {
+  return s
+    .replace(/<NAME>/g, `<span class="emph">${S.name}</span>`)
+    .replace(/<emph>/g, '<span class="emph">').replace(/<\/emph>/g, '</span>')
+    .replace(/<danger>/g, '<span class="danger-text">').replace(/<\/danger>/g, '</span>');
+}
+
+function renderSegs(segs, wrap) {
+  segs.forEach(seg => {
+    if (seg.t === 'cond') {
+      // pick first matching condition key, else 'def'
+      let chosen = null;
+      for (const key of Object.keys(seg)) {
+        if (key === 't' || key === 'def') continue;
+        if (SEG_CONDS[key] && SEG_CONDS[key]()) { chosen = seg[key]; break; }
+      }
+      if (!chosen) chosen = seg.def || [];
+      renderSegs(chosen, wrap);
+      return;
+    }
+    let el;
+    if (seg.t === 'chapter') { el = document.createElement('div'); el.className = 'chapter-tag'; el.textContent = seg.x; }
+    else if (seg.t === 'h2') { el = document.createElement('h2'); el.textContent = seg.x; }
+    else {
+      el = document.createElement('p');
+      const cls = { n:'narration', dialog:'dialog', think:'thought', spirit:'spirit-line' }[seg.t] || 'narration';
+      el.className = cls;
+      el.innerHTML = transformText(seg.x);
+    }
+    wrap.appendChild(el);
+  });
+}
+
 function renderChoices(node) {
   const box = document.getElementById('choices');
   box.innerHTML = '';
   node.choices.forEach((ch, i) => {
     const locked = !reqMet(ch.req);
     const btn = document.createElement('button');
-    const special = ch.to === '__summary__' || ch.to === '__restart__' || ch.c.includes('刀') || ch.c.includes('相信');
-    btn.className = 'choice' + (locked ? ' req-locked' : '') + (special && !locked ? '' : '');
-    let reqNote = '';
-    if (locked && ch.req) {
-      const parts = Object.entries(ch.req).map(([k,v]) => {
-        const nm = {calm:'冷靜',courage:'勇氣',sense:'靈感',bond:'與凛羈絆'}[k] || k;
-        return `${nm} ≥ ${v}（目前 ${S[k]||0}）`;
-      });
-      reqNote = ' · 🔒 ' + parts.join('、');
-    }
-    btn.innerHTML = `<span class="cnum">${i+1}.</span><span class="ctext">${ch.c}` +
-      (ch.tag ? `<div class="ctag">${ch.tag}${reqNote}</div>` : '') + `</span>`;
+    btn.className = 'choice' + (locked ? ' req-locked' : '');
+    const note = locked ? `<div class="ctag">🔒 此刻的你，還無法做出這個選擇</div>` : '';
+    btn.innerHTML = `<span class="cnum">${i+1}.</span><span class="ctext">${ch.c}${note}</span>`;
     if (!locked) btn.onclick = () => choose(ch);
     box.appendChild(btn);
   });
@@ -730,7 +968,8 @@ function renderChoices(node) {
 
 function choose(ch) {
   if (ch.to === '__restart__') { doRestart(); return; }
-  if (ch.to === '__summary__') { showSummary(); return; }
+  if (ch.to === '__summary__') { showSummary(1); return; }
+  if (ch.to === '__summary2__') { showSummary(2); return; }
   applyFx(ch.fx, ch.flag);
   renderNode(ch.to);
 }
@@ -757,8 +996,10 @@ function updateSidebar(node) {
 
   // progress track
   const track = document.getElementById('progress-track');
+  const chNum = node.chapter || 1;
+  const labels = CHAPTERS[chNum] || CHAPTERS[1];
   const cur = node.progress !== undefined ? node.progress : 0;
-  track.innerHTML = PROGRESS_LABELS.map((lab, i) => {
+  track.innerHTML = labels.map((lab, i) => {
     const cls = i < cur ? 'done' : i === cur ? 'current' : '';
     return `<div class="pnode ${cls}"><span class="pmark"></span><span class="ptext">${lab}</span></div>`;
   }).join('');
@@ -774,32 +1015,62 @@ function setText(id, v) { const e = document.getElementById(id); if (e) e.textCo
 /* ════════════════════════════════════════════════════════
    SUMMARY
 ════════════════════════════════════════════════════════ */
-function showSummary() {
+function showSummary(chapter) {
   const story = document.getElementById('story');
   const f = S.flags;
-  let style = '';
-  if (f.fullResolve) style = '【烈・捨身之魂】你毫不猶豫地擁抱了力量與責任，是天生的戰士。';
-  else if (f.tookHit) style = '【義・以身擋刃】你願為素昧平生之人流血，擁有最珍貴的俠義之心。';
-  else if (f.cleverDodge) style = '【智・冷眼算路】你在絕境中依然冷靜，是少見的智將之才。';
-  else if (f.vow) style = '【誓・並肩之心】你選擇守護那個守護你的人，羈絆將是你最強的武器。';
-  else style = '【靜・自有定見】你以自己的節奏面對未知，沉穩而堅定。';
+  const bondLabel = S.bond === 0 ? '陌生' : BOND_LABELS[Math.min(4, Math.floor(S.bond/2))];
 
-  let bondText = S.bond >= 4 ? '霜月凛已將你視為可以託付後背的夥伴。' :
-                 S.bond >= 2 ? '霜月凛開始對你另眼相看。' :
-                 '霜月凛還在觀察這個古怪的人類。';
+  let title, lines;
+
+  if (chapter === 2) {
+    let style;
+    if (f.c2_shield) style = '【盾・以身為牆】面對壓倒性的強敵，你仍選擇擋在她身前。守護，是你的本能。';
+    else if (f.c2_read) style = '【眼・洞見破綻】即使必敗，你也要在強者身上留下一道傷。你的雙眼，看得見未來。';
+    else if (f.c2_rush) style = '【刃・先發制人】你從不等待命運降臨，而是主動揮刀斬向它。';
+    else if (f.c2_reachRin) style = '【絆・至死方休】在生命的最後一刻，你伸向的不是生路，而是她。';
+    else style = '【韌・不屈之魂】你被擊倒，卻從未被擊敗。倒下的姿勢，也朝著前方。';
+
+    let resolveText = S.bond >= 4 ? '為了奪回霜月凛，你願意走進那座連死神都畏懼的尸魂界。' :
+                      '一段未竟的契約，驅使你踏向未知的尸魂界。';
+
+    title = '第二章 · 旅程總結';
+    lines = `
+      <p class="narration"><span class="emph">${S.name}</span> 的試煉之路</p>
+      <p class="narration">▸ 面對使者的姿態：<span class="emph">${style}</span></p>
+      <p class="narration">▸ 當前靈壓：<span class="emph">${S.reiatsu}</span>（真正的力量，正在甦醒）</p>
+      <p class="narration">▸ 勇氣 <span class="emph">${S.courage}</span> ・ 冷靜 <span class="emph">${S.calm}</span> ・ 靈感 <span class="emph">${S.sense}</span></p>
+      <p class="narration">▸ 與凛的羈絆：<span class="emph">${bondLabel}</span></p>
+      <p class="thought">${resolveText}</p>
+      <p class="thought">你在絕望中嘗到了強者與弱者的鴻溝，也在黑暗中接住了一隻引路的手。下一站——尸魂界。</p>`;
+  } else {
+    let style;
+    if (f.fullResolve) style = '【烈・捨身之魂】你毫不猶豫地擁抱了力量與責任，是天生的戰士。';
+    else if (f.tookHit) style = '【義・以身擋刃】你願為素昧平生之人流血，擁有最珍貴的俠義之心。';
+    else if (f.cleverDodge) style = '【智・冷眼算路】你在絕境中依然冷靜，是少見的智將之才。';
+    else if (f.vow) style = '【誓・並肩之心】你選擇守護那個守護你的人，羈絆將是你最強的武器。';
+    else style = '【靜・自有定見】你以自己的節奏面對未知，沉穩而堅定。';
+
+    let bondText = S.bond >= 4 ? '霜月凛已將你視為可以託付後背的夥伴。' :
+                   S.bond >= 2 ? '霜月凛開始對你另眼相看。' :
+                   '霜月凛還在觀察這個古怪的人類。';
+
+    title = '第一章 · 旅程總結';
+    lines = `
+      <p class="narration"><span class="emph">${S.name}</span> 的覺醒之路</p>
+      <p class="narration">▸ 戰鬥風格：<span class="emph">${style}</span></p>
+      <p class="narration">▸ 當時靈壓：<span class="emph">480</span>（代理死神級）</p>
+      <p class="narration">▸ 勇氣 <span class="emph">${S.courage}</span> ・ 冷靜 <span class="emph">${S.calm}</span> ・ 靈感 <span class="emph">${S.sense}</span></p>
+      <p class="narration">▸ 與凛的羈絆：<span class="emph">${bondLabel}</span> — ${bondText}</p>
+      <p class="thought">你拯救了一個迷途的靈魂，斬碎了第一隻虛，並與一名死神締結了改變命運的契約。這只是漫長旅途的第一步。</p>`;
+  }
 
   story.innerHTML = `
     <div class="scene-text fade-in">
       <div class="chapter-tag">JOURNEY SUMMARY</div>
-      <h2>第一章 · 旅程總結</h2>
-      <p class="narration"><span class="emph">${S.name}</span> 的覺醒之路</p>
-      <p class="narration">▸ 戰鬥風格：<span class="emph">${style}</span></p>
-      <p class="narration">▸ 最終靈壓：<span class="emph">${S.reiatsu}</span>（代理死神級）</p>
-      <p class="narration">▸ 勇氣 <span class="emph">${S.courage}</span> ・ 冷靜 <span class="emph">${S.calm}</span> ・ 靈感 <span class="emph">${S.sense}</span></p>
-      <p class="narration">▸ 與凛的羈絆：<span class="emph">${S.bond === 0 ? '陌生' : BOND_LABELS[Math.min(4, Math.floor(S.bond/2))]}</span> — ${bondText}</p>
-      <p class="thought">你拯救了一個迷途的靈魂，斬碎了第一隻虛，並與一名死神締結了改變命運的契約。這只是漫長旅途的第一步。</p>
+      <h2>${title}</h2>
+      ${lines}
       <hr style="border:none;border-top:1px solid var(--border);margin:18px 0">
-      <p class="narration" style="text-align:center;color:var(--text-dim)">第二章正在撰寫中。<br>感謝你的遊玩，代理死神。</p>
+      <p class="narration" style="text-align:center;color:var(--text-dim)">${chapter === 2 ? '第三章「流魂街篇」正在撰寫中。<br>感謝你的遊玩，挑戰尸魂界的人。' : '感謝你的遊玩。'}</p>
     </div>`;
   const box = document.getElementById('choices');
   box.innerHTML = '';
