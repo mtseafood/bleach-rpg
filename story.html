@@ -145,6 +145,45 @@
   }
   .continue-btn:hover { background:var(--accent2); transform:translateY(-2px); box-shadow:0 6px 20px rgba(255,107,0,.25); }
 
+  /* COMBAT */
+  .combat { max-width:780px; margin:0 auto; }
+  .combat-enemy, .combat-player { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:14px 16px; margin-bottom:12px; }
+  .combat-enemy { border-color:#5a2222; }
+  .combat-player { border-color:#2a3a5a; }
+  .cb-name { font-size:15px; font-weight:700; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
+  .cb-enemy-name { color:#e07070; }
+  .cb-player-name { color:var(--accent2); }
+  .cb-tag { font-size:11px; color:var(--text-dim); font-weight:400; }
+  .cb-hpbar-bg { height:14px; background:#1a1a2a; border-radius:7px; overflow:hidden; }
+  .cb-hpbar { height:100%; transition:width .4s; }
+  .cb-hpbar.enemy { background:linear-gradient(90deg,#7a1010,#e05050); }
+  .cb-hpbar.player { background:linear-gradient(90deg,#8b0000,#e05050); }
+  .cb-mpbar-bg { height:8px; background:#1a1a2a; border-radius:4px; overflow:hidden; margin-top:7px; }
+  .cb-mpbar { height:100%; background:linear-gradient(90deg,#003380,#4090ff); transition:width .4s; }
+  .cb-hptext { font-size:11px; color:var(--text-dim); text-align:right; margin-top:3px; }
+  .cb-intent { font-size:12px; color:#e0a050; margin-top:8px; }
+  .cb-intent.danger { color:#ff5555; font-weight:700; }
+  .combat-log { background:#0d0d16; border:1px solid var(--border); border-radius:8px; padding:12px 16px; margin-bottom:14px; min-height:92px; max-height:168px; overflow-y:auto; font-size:13px; line-height:1.7; }
+  .combat-log::-webkit-scrollbar { width:4px; }
+  .combat-log::-webkit-scrollbar-thumb { background:#2a2a3a; border-radius:2px; }
+  .cb-log-line { margin-bottom:4px; color:var(--text-dim); }
+  .cb-log-line.you { color:#7ec8ff; }
+  .cb-log-line.enemy { color:#e08080; }
+  .cb-log-line.crit { color:var(--accent2); font-weight:700; }
+  .cb-log-line.heal { color:#70d090; }
+  .cb-log-line.system { color:var(--text-muted); }
+  .combat-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .cb-action { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:11px 14px; cursor:pointer; transition:all .15s; text-align:left; color:var(--text); }
+  .cb-action:hover:not(:disabled) { border-color:var(--accent); background:#1a1108; transform:translateY(-1px); }
+  .cb-action:disabled { opacity:.35; cursor:not-allowed; }
+  .cb-act-name { font-weight:700; font-size:14px; }
+  .cb-act-desc { font-size:11px; color:var(--text-muted); margin-top:2px; }
+  .cb-action.release { border-color:var(--gold); }
+  .cb-action.release:hover:not(:disabled) { background:#1a1505; border-color:var(--accent2); }
+  .cb-victory, .cb-defeat { text-align:center; padding:18px; border-radius:8px; margin-bottom:14px; animation:fadeIn .4s; }
+  .cb-victory { background:#0f1a10; border:1px solid #1d5030; color:#8fd8a0; }
+  .cb-defeat { background:#1a0808; border:1px solid #5a2222; color:#dd8888; }
+
   /* MODAL */
   #modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.9); backdrop-filter:blur(8px);
     display:flex; align-items:center; justify-content:center; z-index:1000; }
@@ -894,6 +933,12 @@ const STORY = {
   c3_gate: {
     chapter:3, time:'黃昏', place:'靈廷・西方「白道門」', rei:'濃密',
     progress:2, events:['白牆的西門前','守門的巨人・獄郎','一道凡力無法撼動的關卡'],
+    battle:{
+      enemy:{ name:'守門將・獄郎', hp:150, atk:14, specialMult:2.2, specialEvery:3, special:'巨斧・天落叩' },
+      release:null,
+      intro:'獄郎舉起比人還大的巨斧，大地為之震顫——守門將之戰，開始！',
+      winText:'你硬生生接下了獄郎的全力一斧！巨人爽朗大笑，認可了你的勇氣，依約為你抬起了千鈞巨門。'
+    },
     text:[
       {t:'n', x:'白道門近看，比想像中更令人窒息。那是一道高達數十丈的純白巨門，門前站著一個<emph>身形如小山般的巨人</emph>——他足有五層樓高，扛著一柄比人還大的巨斧，正是這道門的守護者。'},
       {t:'dialog', x:'「站住！」巨人的聲音如雷貫耳，震得地面發顫，「我乃白道門守門將・<emph>獄郎</emph>！想從這道門過去，除非……能擋下我這一斧！」'},
@@ -1033,21 +1078,23 @@ const STORY = {
     progress:0, setState:{hp:100, mp:100, sta:100, reiatsu:3200},
     badge:'闖入靈廷者', charMeta:'代理死神・突入靈廷',
     events:['你在靈廷中穿行','追兵四起','處刑，定在三日後正午'],
+    battle:{
+      enemy:{ name:'巡邏隊長（第三席）', hp:130, atk:13, specialMult:2.0, specialEvery:3, special:'連環斬' },
+      release:'shikai',
+      intro:'巡邏隊長一聲令下，數道刀光同時斬來——靈廷的第一場硬仗，開始！',
+      winText:'你擊潰了巡邏隊長，將整隊死神壓制在地。「怎、怎麼可能……一個入侵者竟這麼強——」你越過倒地的追兵，繼續向斷魂台深入。'
+    },
     text:[
       {t:'chapter', x:'CHAPTER FOUR'},
       {t:'h2', x:'決戰・靈廷'},
       {t:'n', x:'靈廷的街道如棋盤般規整，純白的高牆在晨光中泛著冷意。你壓低靈壓，在建築的陰影間疾行，朝著斷魂台的方向前進。'},
       {t:'n', x:'「找到入侵者了——在這！」一隊巡邏的死神發現了你，拔刀圍上。為首的第三席靈壓不弱，一聲令下，數道刀光同時斬來。'},
-      {t:'n', x:'但這一次，你的身體比思考更快。金色的『曙』劃出一道流暢的弧光——只一個照面，那名第三席的刀就被震飛，連人帶隊員被你的靈壓壓得抬不起頭。'},
-      {t:'dialog', x:'「怎、怎麼可能……一個入侵者，靈壓竟然這麼強——」'},
-      {t:'think', x:'這一個多月的磨難沒有白費。現在的我，已經不是當初那個被白羽一刀斬落的我了。'},
-      {t:'n', x:'你越過倒地的巡邏隊，繼續深入。然而，你也清楚地感覺到，更強大的靈壓正從四面八方收束而來——真正的強者，就要登場了。'},
-      {t:'n', x:'從一名落單死神口中，你逼問出了關鍵情報：霜月凛的處刑，因「入侵者出現」而<danger>提前到了三日後的正午</danger>，地點正是斷魂台。'}
+      {t:'think', x:'這一個多月的磨難沒有白費。現在的我，已經不是當初那個被白羽一刀斬落的我了——來吧！'},
+      {t:'n', x:'你握緊『曙』，迎向撲來的刀光。從一名先前被你逼問的落單死神口中，你已得知關鍵情報：霜月凛的處刑，因「入侵者出現」而<danger>提前到了三日後的正午</danger>，地點正是斷魂台。但要趕到那裡，得先殺出這條包圍。'}
     ],
     choices:[
-      { c:'不顧一切，朝斷魂台全速狂奔。', to:'c4_chase', fx:{courage:3, sta:-10}, ev:'你向處刑台疾奔' },
-      { c:'壓低靈壓，謹慎地避開強敵潛行。', req:{sense:10}, to:'c4_chase', fx:{sense:2, calm:2}, ev:'你謹慎地潛行', flag:{c4_stealth:1} },
-      { c:'坦然釋放靈壓——強者，就該堂堂正正地殺過去。', to:'c4_chase', fx:{courage:2, calm:1}, ev:'你坦然迎向強敵' }
+      { c:'以速度突破——搶攻，速戰速決！', to:'c4_chase', fx:{courage:2}, ev:'你搶先發動攻勢' },
+      { c:'沉著應戰，看準破綻再一擊制敵。', to:'c4_chase', fx:{calm:1, sense:1}, ev:'你冷靜地應戰' }
     ]
   },
 
@@ -1350,6 +1397,12 @@ const STORY = {
     chapter:5, time:'永夜', place:'虛圈・虛夜白塔 外牆', rei:'異常濃密',
     progress:5, events:['你抵達白塔外牆','一名破面守衛擋路','決戰的氣息，越來越濃'],
     fb:{type:'neutral', v:'白塔的大門之後，是綾小路冥的領域。'},
+    battle:{
+      enemy:{ name:'守塔破面・碎牙', hp:240, atk:20, specialMult:2.3, specialEvery:3, special:'鋸齒大斬・虛閃' },
+      release:'bankai',
+      intro:'碎牙抽出鋸齒巨刀，破面的剛猛靈壓如山嶽壓下——守塔之戰，開始！',
+      winText:'你斬碎了碎牙的鋸齒巨刀，也斬開了他的胸膛。臨終前，這個被綾小路強行改造的靈魂，露出了解脫般的神情，化作光點消散。白塔的大門，為你而開。'
+    },
     text:[
       {t:'n', x:'歷經跋涉，你和凛終於來到虛夜白塔的腳下。近看，這座高塔比想像中更加宏偉而詭異，純白的牆面上爬滿了暗紅的紋路，彷彿活物的血管。'},
       {t:'n', x:'塔下的巨大拱門前，立著一道魁梧的身影——又一名破面，比藍鬼更加高大，渾身肌肉虬結，背後負著一柄巨大的鋸齒刀。他咧開嘴，露出獠牙般的笑。'},
@@ -1421,6 +1474,12 @@ const STORY = {
     chapter:6, time:'永夜', place:'白塔・中層大廳', rei:'天崩地裂',
     progress:1, events:['藍鬼，再度擋路','擄走茜的破面','這一次，換你來討回'],
     fb:{type:'neutral', v:'擄走茜的破面，就在眼前。'},
+    battle:{
+      enemy:{ name:'破面・藍鬼', hp:280, atk:23, specialMult:2.4, specialEvery:3, special:'大虛閃（Gran Rey Cero）' },
+      release:'bankai',
+      intro:'藍鬼拔出白刀，響轉的殘影瞬間佈滿大廳——雪恥之戰，開始！',
+      winText:'這一次，你沒有再讓他逃走。卍解的金光貫穿了藍鬼的胸膛。「一個……人類……竟然……」他難以置信地瞪著你，化作光點消散。茜的下落，已在眼前。'
+    },
     text:[
       {t:'n', x:'塔的中層是一座空曠的白色大廳。那個擄走茜的破面——<emph>藍鬼</emph>——正懶洋洋地靠在柱子上等著你們。'},
       {t:'dialog', x:'「喲，你還真來了。」藍鬼咧嘴一笑，拔出白刀，「上次在尸魂界沒能跟你好好打一場，正好。那丫頭嘛……已經被綾小路大人接收了，現在正享受著『改造』呢。」'},
@@ -1486,6 +1545,12 @@ const STORY = {
     badge:'真・卍解の使い手',
     events:['你的靈魂，與曙徹底共鳴','真・卍解・曙・天照','黑暗中，升起真正的朝陽'],
     fb:{type:'good', v:'你超越了卍解，觸碰到了更高的領域。'},
+    battle:{
+      enemy:{ name:'破面化的綾小路冥', hp:380, atk:30, specialMult:2.6, specialEvery:3, special:'黑棺・虛閃融合' },
+      release:'true',
+      intro:'綾小路冥的黑金靈壓與你的曙光正面碰撞——三界命運的終焉之戰，開始！',
+      winText:'白色的聖焰貫穿了綾小路冥破面化的軀體。「為什麼……我明明就要成神了——」他的面具碎裂，永夜的虛圈，被你的光染成了黎明的金色。'
+    },
     text:[
       {t:'cond', c6_forAll:[
         {t:'n', x:'凛在塔下等著你。茜相信著你。岩鐵、火華院、白羽……所有人的羈絆，此刻化作灼熱的光，在你胸中熊熊燃燒。「我不會輸——我背負著太多人的期待，絕不能在這裡倒下！」'}
@@ -1709,9 +1774,198 @@ function renderChoices(node) {
     btn.className = 'choice' + (locked ? ' req-locked' : '');
     const note = locked ? `<div class="ctag">🔒 此刻的你，還無法做出這個選擇</div>` : '';
     btn.innerHTML = `<span class="cnum">${i+1}.</span><span class="ctext">${ch.c}${note}</span>`;
-    if (!locked) btn.onclick = () => choose(ch);
+    if (!locked) {
+      if (node.battle && !ch.to.startsWith('__')) {
+        btn.onclick = () => { applyFx(ch.fx, ch.flag); startBattle(node.battle, ch.to); };
+      } else {
+        btn.onclick = () => choose(ch);
+      }
+    }
     box.appendChild(btn);
   });
+}
+
+/* ════════════════════════════════════════════════════════
+   COMBAT ENGINE — 回合制戰鬥
+════════════════════════════════════════════════════════ */
+let B = null;
+const FORM_LABEL = { sealed:'封印', shikai:'始解', bankai:'卍解', 'true':'真・卍解' };
+const FORM_RANK  = { sealed:0, shikai:1, bankai:2, 'true':3 };
+const REL_MULT   = { shikai:1.4, bankai:1.8, 'true':2.3 };
+const REL_NAME   = { shikai:'始解・曙', bankai:'卍解・煌天輪', 'true':'真・卍解・天照' };
+
+function rand(a,b){ return a + Math.random()*(b-a); }
+function critChance(){ return Math.min(0.40, 0.05 + S.sense*0.012); }
+function dodgeChance(){ return Math.min(0.80, 0.40 + S.sense*0.022); }
+function playerAtk(){ return 18 + Math.floor(S.courage*0.5) + Math.floor(S.sense*0.25); }
+function canRelease(form){ return FORM_RANK[S.zanState] >= FORM_RANK[form]; }
+
+function startBattle(bat, winTo){
+  const pMax = Math.min(220, 90 + S.courage);
+  B = {
+    bat,
+    enemy: { name:bat.enemy.name, hp:bat.enemy.hp, maxHp:bat.enemy.hp, atk:bat.enemy.atk,
+             specialMult:bat.enemy.specialMult||2, specialEvery:bat.enemy.specialEvery||3,
+             special:bat.enemy.special||'強力一擊', charging:false },
+    pHp: pMax, pMax, pMp: 100,
+    form: 'sealed', atkMul: 1, releaseUsed: false,
+    guard:false, dodgePend:false, turn:0, log:[], win:winTo, over:false
+  };
+  B.log.push({ c:'system', t: bat.intro || '戰鬥開始！' });
+  renderBattle();
+}
+
+function renderBattle(){
+  const e = B.enemy;
+  const ePct = Math.max(0, Math.round(e.hp / e.maxHp * 100));
+  const pPct = Math.max(0, Math.round(B.pHp / B.pMax * 100));
+  const mpPct = Math.max(0, Math.round(B.pMp));
+  let intent = '';
+  if (e.charging) intent = `<div class="cb-intent danger">⚠ ${e.name} 蓄力完成——下一擊將造成巨大傷害！</div>`;
+  const logHtml = B.log.slice(-7).map(l => `<div class="cb-log-line ${l.c||''}">${l.t}</div>`).join('');
+  document.getElementById('story').innerHTML = `
+    <div class="combat fade-in">
+      <div class="combat-enemy">
+        <div class="cb-name"><span class="cb-enemy-name">${e.name}</span><span class="cb-tag">敵</span></div>
+        <div class="cb-hpbar-bg"><div class="cb-hpbar enemy" style="width:${ePct}%"></div></div>
+        <div class="cb-hptext">HP ${Math.max(0,Math.round(e.hp))} / ${e.maxHp}</div>
+        ${intent}
+      </div>
+      <div class="combat-log">${logHtml}</div>
+      <div class="combat-player">
+        <div class="cb-name"><span class="cb-player-name">${S.name}</span><span class="cb-tag">${FORM_LABEL[B.form]}</span></div>
+        <div class="cb-hpbar-bg"><div class="cb-hpbar player" style="width:${pPct}%"></div></div>
+        <div class="cb-hptext">HP ${Math.max(0,Math.round(B.pHp))} / ${B.pMax}</div>
+        <div class="cb-mpbar-bg"><div class="cb-mpbar" style="width:${mpPct}%"></div></div>
+        <div class="cb-hptext">靈力 ${Math.round(B.pMp)} / 100</div>
+      </div>
+    </div>`;
+  const story = document.getElementById('story');
+  const logEl = story.querySelector('.combat-log');
+  if (logEl) logEl.scrollTop = logEl.scrollHeight;
+  if (!B.over) renderBattleActions();
+}
+
+function renderBattleActions(){
+  const box = document.getElementById('choices');
+  box.innerHTML = '';
+  const acts = [
+    { name:'斬擊', desc:'基礎攻擊・回復少量靈力', fn:()=>act('basic') },
+    { name:'鬼道', desc:'消耗 25 靈力・強力攻擊', dis:B.pMp<25, fn:()=>act('skill') }
+  ];
+  if (B.bat.release && !B.releaseUsed && canRelease(B.bat.release)) {
+    acts.push({ name:'解放 '+REL_NAME[B.bat.release], desc:'消耗 20 靈力・大幅強化＋回復', cls:'release', dis:B.pMp<20, fn:()=>act('release') });
+  }
+  acts.push({ name:'防禦', desc:'大幅減傷・回復靈力與體力', fn:()=>act('guard') });
+  acts.push({ name:'閃避', desc:'有機率完全迴避下一擊', fn:()=>act('dodge') });
+  const grid = document.createElement('div');
+  grid.className = 'combat-actions';
+  acts.forEach(a => {
+    const b = document.createElement('button');
+    b.className = 'cb-action ' + (a.cls||'');
+    b.disabled = !!a.dis;
+    b.innerHTML = `<div class="cb-act-name">${a.name}</div><div class="cb-act-desc">${a.desc}</div>`;
+    if (!a.dis) b.onclick = a.fn;
+    grid.appendChild(b);
+  });
+  box.appendChild(grid);
+}
+
+function act(type){
+  if (B.over) return;
+  const e = B.enemy;
+  if (type === 'basic') {
+    let d = playerAtk() * B.atkMul * rand(0.85,1.15);
+    const crit = Math.random() < critChance(); if (crit) d *= 1.6;
+    d = Math.round(d); e.hp -= d; B.pMp = Math.min(100, B.pMp+8);
+    B.log.push({ c:crit?'crit':'you', t:`你揮出${B.form==='sealed'?'一刀':'『曙』'}，造成 ${d} 傷害${crit?'（暴擊！）':''}。` });
+  } else if (type === 'skill') {
+    B.pMp -= 25;
+    let d = playerAtk() * B.atkMul * 1.9 * rand(0.9,1.1);
+    const crit = Math.random() < critChance(); if (crit) d *= 1.6;
+    d = Math.round(d); e.hp -= d;
+    B.log.push({ c:crit?'crit':'you', t:`你詠唱鬼道・赤火炮，轟出 ${d} 傷害${crit?'（暴擊！）':''}。` });
+  } else if (type === 'release') {
+    B.pMp -= 20; B.releaseUsed = true; B.form = B.bat.release;
+    B.atkMul = REL_MULT[B.bat.release]; B.pHp = Math.min(B.pMax, B.pHp+25);
+    B.log.push({ c:'heal', t:`你解放了【${REL_NAME[B.bat.release]}】！攻擊力大幅提升，傷勢也得到回復。` });
+  } else if (type === 'guard') {
+    B.guard = true; B.pMp = Math.min(100, B.pMp+12); B.pHp = Math.min(B.pMax, B.pHp+6);
+    B.log.push({ c:'system', t:'你擺出架式，準備抵擋下一擊。' });
+  } else if (type === 'dodge') {
+    B.dodgePend = true;
+    B.log.push({ c:'system', t:'你壓低重心，準備以瞬步閃避。' });
+  }
+  if (e.hp <= 0) { victory(); return; }
+  enemyTurn();
+}
+
+function enemyTurn(){
+  const e = B.enemy;
+  B.turn++;
+  let dmg, special = false;
+  if (e.charging) {
+    dmg = e.atk * e.specialMult; e.charging = false; special = true;
+  } else if (e.specialEvery && B.turn % e.specialEvery === 0) {
+    e.charging = true;
+    B.log.push({ c:'enemy', t:`${e.name} 開始凝聚龐大的靈壓……` });
+    dmg = e.atk * 0.4;
+  } else {
+    dmg = e.atk * rand(0.85,1.15);
+  }
+  dmg = Math.round(dmg);
+
+  if (B.dodgePend) {
+    B.dodgePend = false;
+    if (Math.random() < dodgeChance()) {
+      B.log.push({ c:'you', t:`你以瞬步閃過了 ${e.name} 的攻擊！` });
+      renderBattle(); return;
+    }
+    B.log.push({ c:'system', t:'閃避失敗……' });
+  }
+  if (B.guard) {
+    dmg = Math.round(dmg * 0.35); B.guard = false;
+    B.log.push({ c:'enemy', t:`${e.name} ${special?'轟出強力一擊':'發動攻擊'}，被你擋下大半，僅受 ${dmg} 傷害。` });
+  } else {
+    B.log.push({ c:special?'crit':'enemy', t:`${e.name} ${special?'的強力一擊命中！造成':'攻擊命中，造成'} ${dmg} 傷害。` });
+  }
+  B.pHp -= dmg;
+  if (B.pHp <= 0) { defeat(); return; }
+  renderBattle();
+}
+
+function victory(){
+  B.over = true;
+  renderBattle();
+  const v = document.createElement('div');
+  v.className = 'cb-victory';
+  v.innerHTML = `<div style="font-size:18px;font-weight:700;margin-bottom:6px">⚔ 勝　利</div><div style="font-size:13px;line-height:1.7">${B.bat.winText||'你擊敗了敵人！'}</div>`;
+  document.querySelector('.combat').prepend(v);
+  const box = document.getElementById('choices'); box.innerHTML = '';
+  const btn = document.createElement('button');
+  btn.className = 'continue-btn'; btn.textContent = '▶ 繼續';
+  btn.onclick = () => { const to = B.win, fx = B.bat.winFx; B = null; if (fx) applyFx(fx); renderNode(to); };
+  box.appendChild(btn);
+}
+
+function defeat(){
+  B.over = true;
+  renderBattle();
+  const d = document.createElement('div');
+  d.className = 'cb-defeat';
+  d.innerHTML = `<div style="font-size:18px;font-weight:700;margin-bottom:6px">你被擊倒了……</div><div style="font-size:13px;line-height:1.7">但只要還有想守護的人，就不能在此倒下。</div>`;
+  document.querySelector('.combat').prepend(d);
+  const box = document.getElementById('choices'); box.innerHTML = '';
+  const retry = document.createElement('button');
+  retry.className = 'continue-btn'; retry.textContent = '↻ 再戰一次';
+  retry.onclick = () => startBattle(B.bat, B.win);
+  box.appendChild(retry);
+  const skip = document.createElement('button');
+  skip.className = 'cb-action';
+  skip.style.cssText = 'margin-top:10px;width:100%;text-align:center;max-width:780px';
+  skip.innerHTML = '<div class="cb-act-name">以劇情之力突破（跳過戰鬥）</div>';
+  skip.onclick = () => { const to = B.win, fx = B.bat.winFx; B = null; if (fx) applyFx(fx); renderNode(to); };
+  box.appendChild(skip);
 }
 
 function choose(ch) {
