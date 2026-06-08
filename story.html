@@ -180,6 +180,9 @@
   .cb-act-desc { font-size:11px; color:var(--text-muted); margin-top:2px; }
   .cb-action.release { border-color:var(--gold); }
   .cb-action.release:hover:not(:disabled) { background:#1a1505; border-color:var(--accent2); }
+  .cb-action.hollow { border-color:#7a3a9a; }
+  .cb-action.hollow:hover:not(:disabled) { background:#16081a; border-color:#c060e0; }
+  .cb-action.hollow .cb-act-name { color:#c878e0; }
   .cb-victory, .cb-defeat { text-align:center; padding:18px; border-radius:8px; margin-bottom:14px; animation:fadeIn .4s; }
   .cb-victory { background:#0f1a10; border:1px solid #1d5030; color:#8fd8a0; }
   .cb-defeat { background:#1a0808; border:1px solid #5a2222; color:#dd8888; }
@@ -281,6 +284,12 @@
       <div class="zan-state sealed" id="zan-state">封印</div>
     </div>
 
+    <div class="scard" id="hollow-card" style="display:none">
+      <div class="stitle">虛化</div>
+      <div class="zan-name" style="color:#c878e0;text-shadow:0 0 8px rgba(200,120,224,.5)">虛面</div>
+      <div class="zan-state" style="color:#a050c0">已掌控・可於戰鬥中解放</div>
+    </div>
+
     <div class="scard">
       <div class="stitle">特質</div>
       <div class="trait-row"><span class="trait-name">勇氣</span><span class="trait-val" id="t-courage">0</span></div>
@@ -323,6 +332,7 @@ let S = {
   badge: '尚未覺醒',
   charMeta: '人類・空座町高中生',
   zanName: null, zanState: 'sealed',
+  hollowUnlocked: false,
   flags: {},
   node: 'c1_00',
   visited: []
@@ -331,7 +341,8 @@ let S = {
 const REIATSU_LABELS = [
   [15, '沉睡的靈魂'], [40, '微弱的靈覺'], [120, '覺醒的徵兆'],
   [400, '初生的死神'], [1500, '見習死神'], [3500, '始解之力'],
-  [12000, '席官級靈壓'], [40000, '卍解・隊長級'], [90000, '真・卍解'], [9999999, '超越之力']
+  [12000, '席官級靈壓'], [40000, '卍解・隊長級'], [90000, '真・卍解'],
+  [130000, '虛化・聖域'], [9999999, '超越之力']
 ];
 
 const BOND_LABELS = ['陌生', '在意', '信賴', '並肩', '生死之交'];
@@ -1620,10 +1631,208 @@ const STORY = {
       {t:'h2', x:'第六章・完'},
       {t:'n', x:'<emph>—— 你覺醒真・卍解「曙・天照」，擊敗破面化的綾小路冥，從虛夜白塔救回了茜。橫跨現世、尸魂界、虛圈的「虛圈篇」，到此完結。</emph>'},
       {t:'n', x:'然而，綾小路臨終的預言，為這片短暫的和平蒙上了陰影。靈王宮彼端沉睡的存在、那位幕後的「真正之人」、即將甦醒的三界之災……一場規模更勝以往的終極之戰，正在不遠的未來，靜靜等待著。'},
-      {t:'think', x:'（<NAME>與霜月凛的傳奇，仍將繼續。感謝你一路陪伴，走到了這裡。）'}
+      {t:'think', x:'—— 但內心深處，某種陌生的悸動，正悄然甦醒。'}
     ],
     choices:[
-      { c:'☆ 查看你的最終旅程總結', to:'__summary6__', fx:{}, ev:'' },
+      { c:'前往第七章 ——「内なる虛」', to:'c7_00', fx:{}, ev:'' },
+      { c:'☆ 先查看你的第二部旅程總結', to:'__summary6__', fx:{}, ev:'' }
+    ]
+  },
+
+  /* ══════════════════════════════════════════════════════
+     CHAPTER 7 — 靈王篇・序章・内なる虛 / The Inner Hollow
+  ══════════════════════════════════════════════════════ */
+
+  /* ───── 不安的徵兆 ───── */
+  c7_00: {
+    chapter:7, time:'數日後・午後', place:'尸魂界・靈廷 修練場', rei:'濃密',
+    progress:0, setState:{hp:100, mp:100, sta:100, reiatsu:88000},
+    badge:'三界之護', charMeta:'代理死神・異變初現',
+    events:['虛圈篇結束數日','你的靈魂深處，有東西在躁動','一個陌生的聲音，開始低語'],
+    text:[
+      {t:'chapter', x:'CHAPTER SEVEN'},
+      {t:'h2', x:'内なる虛'},
+      {t:'n', x:'從虛圈歸來後，已過了數日。靈廷為你們的凱旋舉行了表彰，霜月凛的力量徹底恢復，茜也康復如初，一切看似都回到了正軌。'},
+      {t:'n', x:'但只有你自己知道——有些東西，不一樣了。'},
+      {t:'n', x:'自從在白塔頂端施展真・卍解、與綾小路冥的虛之力量正面碰撞之後，你的靈魂深處，便多了一道揮之不去的<danger>陌生悸動</danger>。它像一顆埋進心底的種子，在每一次你動用靈壓時，悄悄萌芽。'},
+      {t:'n', x:'此刻，你正在修練場揮刀。當『曙』的金光綻放的瞬間——你的眼前，毫無預兆地<danger>閃過一片純白</danger>。'},
+      {t:'dialog', x:'「……找到了。終於……輪到我出場了啊，<emph>王</emph>。」'},
+      {t:'n', x:'一個沙啞、扭曲、彷彿與你自己的聲音重疊在一起的低語，自你的腦海深處響起。你猛地按住臉，劇烈的頭痛襲來，視野邊緣，竟浮現出一絲<danger>白色的、骨質的紋路</danger>。'},
+      {t:'think', x:'這個聲音……這股力量……是從什麼時候開始，潛伏在我體內的——？'}
+    ],
+    choices:[
+      { c:'強行壓下那股悸動，穩住自己的靈壓。', to:'c7_surge', fx:{calm:2}, ev:'你試圖壓制體內的異變' },
+      { c:'凝神探查——那個聲音，究竟是什麼？', to:'c7_surge', fx:{sense:3}, ev:'你探查內心的異樣', flag:{c7_probe:1} }
+    ]
+  },
+
+  /* ───── 虛化暴走 ───── */
+  c7_surge: {
+    chapter:7, time:'傍晚', place:'尸魂界・靈廷 修練場', rei:'異常濃密',
+    progress:1, setState:{hp:75},
+    events:['你的虛化，失控了','白色面具，覆上半張臉','凛，差點被你所傷'],
+    fb:{type:'bad', v:'那不是力量——那是會吞噬你的詛咒。'},
+    text:[
+      {t:'n', x:'你越是想壓制，那股力量就反抗得越激烈。'},
+      {t:'n', x:'「嗚……啊啊——！」一陣劇痛炸開，你的右半邊臉，被一層<danger>白色的、長著猙獰花紋的骨質面具</danger>強行覆蓋。視野染成黑白顛倒的負片，理智被一股嗜血的、純粹破壞的衝動瘋狂沖刷。你的靈壓暴漲到失控的地步，整座修練場的地面寸寸龜裂。'},
+      {t:'dialog', x:'「呵呵……哈哈哈！爽快！這才是力量該有的樣子！讓我來——把擋在眼前的一切，全都<danger>撕碎</danger>吧！」'},
+      {t:'n', x:'失控的身體不受控制地揮出一刀。而那一刀的方向——是聞訊趕來、正衝向你的<emph>霜月凛</emph>！'},
+      {t:'dialog', x:'「住手——！」凛在千鈞一髮之際側身閃過，雪白的刀痕擦著她的臉頰劃過，一縷銀灰色的髮絲飄落。她瞪大眼睛，不是因為恐懼，而是因為<emph>擔憂</emph>，「這股力量……是『虛』！你的體內，怎麼會有虛的力量——！」'},
+      {t:'n', x:'凛的呼喊，像一道閃電劈入你混沌的意識。你用盡全部的意志力，在面具即將完全成形的前一刻，<emph>硬生生扯下了它</emph>。理智，勉強奪回了身體的控制權。'},
+      {t:'think', x:'我差點……差點親手傷了凛。這股力量，如果不能掌控它，遲早會毀掉我，也毀掉我想守護的一切。'}
+    ],
+    choices:[
+      { c:'跪倒在地，向凛道歉：「對不起……我控制不住它。」', to:'c7_kuromaru', fx:{bond:1, calm:1}, ev:'你向凛道歉' },
+      { c:'盯著自己顫抖的手：「這股力量……我必須搞清楚。」', to:'c7_kuromaru', fx:{courage:2}, ev:'你決心查明真相' }
+    ]
+  },
+
+  /* ───── 黑丸玄的警告 ───── */
+  c7_kuromaru: {
+    chapter:7, time:'夜', place:'尸魂界・黑丸雜貨堂（臨時）', rei:'濃密',
+    progress:2, events:['黑丸玄道出真相','你的靈魂，藏著一個「內在之虛」','唯有制伏它，才能掌控虛化'],
+    fb:{type:'neutral', v:'要駕馭那股力量，你必須先走進自己的內心。'},
+    text:[
+      {t:'n', x:'黑丸玄聽完你的描述，臉色罕見地凝重起來。他搖著扇子的手停了下來。'},
+      {t:'dialog', x:'「果然……我早該想到的。」他緩緩開口，「你的靈魂，本就比常人特異——這也是當年綾小路盯上你的原因。而你在白塔施展真・卍解，與那麼純粹的虛之力量正面對撞……等於是親手喚醒了，一直沉睡在你靈魂深處的<emph>『內在之虛』</emph>。」'},
+      {t:'cond', c7_probe:[
+        {t:'dialog', x:'「你方才探到的那個聲音，就是它。」黑丸玄補充道，「它是你靈魂的另一面——由你所有的恐懼、不甘與破壞衝動凝聚而成的、『另一個你』。」'}
+      ], def:[
+        {t:'dialog', x:'「那個在你腦中低語的聲音，就是它的本體。」黑丸玄說。'}
+      ]},
+      {t:'dialog', x:'「它想取代你，奪走這具身體的主導權。如果放任不管，你遲早會徹底『虛化』，變成一隻只懂破壞的怪物。」他話鋒一轉，扇子一指你的胸口，「但是——如果你能在內心的世界裡，<danger>正面擊敗它、讓它臣服</danger>，那股虛之力量，就會成為你的囊中之物。屆時，你將能隨意戴上『虛面』，獲得連隊長都未必擁有的、死神與虛融合的力量。」'},
+      {t:'n', x:'凛擔憂地看著你，握住了你的手：「這太危險了……萬一你在裡面輸了，就再也回不來了。」'},
+      {t:'think', x:'危險，我知道。但這股力量如果不馴服，下一次失控，倒下的可能就是凛、是茜。我沒有退路。'}
+    ],
+    choices:[
+      { c:'「我去。為了不再傷害任何人，我必須掌控它。」', to:'c7_inner', fx:{courage:3, bond:1}, ev:'你決意潛入內心' },
+      { c:'回握凛的手：「相信我。我一定會贏，然後回到妳身邊。」', req:{bond:14}, to:'c7_inner', fx:{bond:2, calm:1}, ev:'你向凛許下承諾', flag:{c7_vow:1} }
+    ]
+  },
+
+  /* ───── 内なる世界 ───── */
+  c7_inner: {
+    chapter:7, time:'???', place:'内在世界・摩天樓林立的天空', rei:'???',
+    progress:3, events:['你潛入了內心世界','摩天樓的側面，是這裡的「地面」','曙，被白色的自己壓制著'],
+    fb:{type:'neutral', v:'在這裡，戰勝它，或被它吞噬。'},
+    text:[
+      {t:'n', x:'黑丸玄以秘術將你的意識，沉入了靈魂的最深處。'},
+      {t:'n', x:'你睜開眼，發現自己站在一片詭異的世界——無數倒臥的摩天大樓，以側面作為「地面」，向四面八方延伸，湛藍的天空中漂浮著破碎的雲。這裡，是你內心世界的具象。'},
+      {t:'n', x:'不遠處，金紅長袍的劍士『曙』單膝跪地，被一隻腳死死踩在身下。而踩著它的——是一個渾身<danger>純白</danger>、與你有著一模一樣面容的存在。它的皮膚白如骨瓷，黑色的鞏膜中嵌著金色的瞳孔，咧開的嘴角掛著瘋狂的笑。它手中，握著一柄純白色的『曙』。'},
+      {t:'dialog', x:'「喲，王。終於肯來了。」白色的你嗤笑著，將『曙』扛上肩，「我等這一刻，可等很久了。在這個世界裡，<emph>強者為王</emph>。你要是贏了，這身力量就借你用用；可你要是輸了——」它舔了舔嘴唇，「這具身體，這條命，這個叫霜月凛的女人……就全都歸我了。」'},
+      {t:'think', x:'另一個我……不，它就是我的一部分。要掌控這股力量，就必須堂堂正正地，戰勝我自己。'}
+    ],
+    choices:[
+      { c:'拔出『曙』，指向白色的自己：「這具身體，只有一個主人。」', to:'c7_battle', fx:{courage:3}, ev:'你向內在之虛宣戰' },
+      { c:'冷靜地凝視對手，看穿它的虛實。', req:{sense:16}, to:'c7_battle', fx:{sense:2, calm:1}, ev:'你冷靜分析內在之虛', flag:{c7_analyze:1} }
+    ]
+  },
+
+  /* ───── 與虛的對決 ───── */
+  c7_battle: {
+    chapter:7, time:'???', place:'内在世界', rei:'???',
+    progress:4, badge:'與虛對決者',
+    events:['你 vs 另一個你','鏡像之戰','勝者，將掌握虛之力'],
+    fb:{type:'neutral', v:'這是一場，與自己的戰鬥。'},
+    battle:{
+      enemy:{ name:'内在之虛（白面の自己）', hp:440, atk:33, specialMult:2.5, specialEvery:3, special:'虛閃・白' },
+      release:'true',
+      intro:'白色的你舉起純白的『曙』，鏡像之戰——開始！戰勝它，奪回身體的主導權！',
+      winText:'你的金焰太刀，壓制了純白的鏡像。內在之虛踉蹌跪地，臉上的瘋狂漸漸化為一抹了然的笑——你，贏得了這具身體的主導權。'
+    },
+    text:[
+      {t:'n', x:'白色的你發出尖嘯，化作一道殘影撲來。它的招式與你如出一轍，卻更加狂暴、更加不擇手段，純白的『曙』挾著扭曲的虛閃，瘋狂地招呼向你。'},
+      {t:'n', x:'這是一場照鏡子般的死鬥——它知道你所有的習慣，你也洞悉它所有的套路。勝負的關鍵，不在於技巧，而在於<emph>意志</emph>。'},
+      {t:'cond', c7_analyze:[
+        {t:'n', x:'你冷靜地看穿了它的虛實——它的力量雖強，卻因『純粹的破壞慾』而毫無章法。只要你的意志不潰散，它的攻勢就傷不了你的根本。'}
+      ], def:[
+        {t:'n', x:'你深吸一口氣，將腦海中凛與茜的身影、將「想守護」的念頭凝成磐石般的意志。來吧——這一戰，我絕不會輸給自己心中的黑暗！'}
+      ]}
+    ],
+    choices:[
+      { c:'以壓倒性的意志，制伏這頭內心的野獸！', to:'c7_master', fx:{courage:3}, ev:'你以意志迎戰內在之虛', flag:{c7_dominate:1} },
+      { c:'不否定它，而是試著去「理解」並接納這份力量。', req:{calm:6}, to:'c7_master', fx:{calm:3, sense:1}, ev:'你試圖與內在之虛共存', flag:{c7_control:1} }
+    ]
+  },
+
+  /* ───── 掌控虛面 ───── */
+  c7_master: {
+    chapter:7, time:'???→現實', place:'内在世界→靈廷', rei:'超越',
+    progress:5, setState:{hp:90, mp:100, sta:100, reiatsu:110000},
+    badge:'虛化的覺醒者', charMeta:'代理死神・虛化覺醒',
+    unlockHollow:true,
+    events:['你戰勝了內在之虛','虛之力，化為己用','你習得了——虛面'],
+    fb:{type:'good', v:'死神與虛的力量，自此在你身上共存。'},
+    text:[
+      {t:'n', x:'白色的你倒在摩天樓的「地面」上，臉上的瘋狂盡數褪去，取而代之的是一種奇異的、近乎滿足的平靜。'},
+      {t:'cond', c7_control:[
+        {t:'dialog', x:'「……哼，接納我，而不是消滅我嗎。」它低聲笑道，「有點意思。罷了——你既然有這份氣度，這身力量，就交給你保管了。需要的時候，喊我一聲便是。」'},
+        {t:'n', x:'白色的身影化作純白的靈壓，溫順地融入你的體內。你與內在之虛，達成了罕見的『共存』。'}
+      ], def:[
+        {t:'dialog', x:'「我認輸了，王。」它咧嘴一笑，「你的意志，比我想像的還要堅韌。這具身體，確實只配你來駕馭。去吧——好好使喚我這份力量。」'},
+        {t:'n', x:'白色的身影化作純白的靈壓，臣服般地融入你的體內。被壓制的『曙』重新站起，向你微微頷首。'}
+      ]},
+      {t:'n', x:'你猛地從冥想中睜開眼，回到了現實的靈廷。試著抬起手，在臉前一橫——一層<emph>純白的虛面</emph>應聲浮現，黑金色的靈壓溫順地環繞著你。這一次，理智，牢牢掌握在自己手中。'},
+      {t:'dialog', x:'「你成功了……」凛又驚又喜地看著你，「那股力量，現在完全聽從你的意志了。」'},
+      {t:'n', x:'黑丸玄滿意地撫掌大笑：「了不起！死神之力、卍解、再加上虛化——你已經踏入了一個前所未有的領域。從今往後，這片『虛面』，就是你的王牌了。」'},
+      {t:'think', x:'死神與虛，共存於我一身。我變得更強了——強到，足以守護我珍視的一切。'}
+    ],
+    choices:[
+      { c:'摘下虛面，望向遠方：「這份力量，我會用在對的地方。」', to:'c7_threat', fx:{calm:1, courage:1}, ev:'你收起了虛面之力' }
+    ]
+  },
+
+  /* ───── 闇之使者 ───── */
+  c7_threat: {
+    chapter:7, time:'夜', place:'尸魂界・靈廷上空', rei:'天崩地裂',
+    progress:6, events:['天空裂開漆黑的縫隙','一名神秘的使者降臨','他來自——靈王宮的彼端'],
+    fb:{type:'bad', v:'綾小路口中的「那位」，終於派來了第一名使者。'},
+    battle:{
+      enemy:{ name:'闇之使者・宵闇', hp:480, atk:35, specialMult:2.6, specialEvery:3, special:'虛無崩落' },
+      release:'true',
+      intro:'宵闇的漆黑靈壓籠罩靈廷——試煉你的使者，降臨！（試著解放虛面，感受新的力量！）',
+      winText:'你以死神、卍解與虛面交織的力量，重創了宵闇。他不退反笑，似乎對你的成長「很滿意」，隨即遁入了漆黑的裂縫。第一場試煉，你通過了。'
+    },
+    text:[
+      {t:'n', x:'就在你以為一切將歸於平靜時，靈廷的夜空，毫無預兆地裂開了一道<danger>漆黑如墨的縫隙</danger>。'},
+      {t:'n', x:'一個身披黑色長袍、面容隱沒在陰影中的高大身影，自裂縫中緩步走出。他的靈壓既非死神，亦非虛，而是一種更加古老、更加空洞、彷彿源自世界盡頭的「虛無」。'},
+      {t:'dialog', x:'「死神與虛的融合之子……綾小路那枚棄子，倒是替我們找到了一件有趣的東西。」使者的聲音不帶絲毫情感，「我是侍奉『那位』的使者——<emph>宵闇</emph>。在『那位』甦醒之前，就讓我來，掂量掂量你的份量吧。」'},
+      {t:'n', x:'凛與趕來的白羽同時拔刀，卻被那股「虛無」的靈壓壓得無法靠近。這一戰，只能靠你自己。'},
+      {t:'think', x:'靈王宮的彼端……『那位』……綾小路的預言，成真了。但無論你們圖謀什麼——我都會在這裡，把第一個來犯的你，徹底擊退！'},
+      {t:'n', x:'你緩緩抬手，將虛面橫在臉前。死神之力、真・卍解、虛之力量，在此刻盡數覺醒。'}
+    ],
+    choices:[
+      { c:'解放全部的力量，迎向闇之使者！', to:'c7_end', fx:{courage:3}, ev:'你以全力迎戰宵闇' },
+      { c:'冷靜地集中精神，尋找這虛無之力的破綻。', req:{sense:18}, to:'c7_end', fx:{sense:2, calm:1}, ev:'你冷靜應對闇之使者' }
+    ]
+  },
+
+  /* ───── 第七章結尾 ───── */
+  c7_end: {
+    chapter:7, time:'拂曉', place:'尸魂界・靈廷', rei:'漸歸平靜',
+    progress:7, setState:{hp:80, mp:80, sta:80, reiatsu:110000},
+    badge:'虛聖（Vizard）', charMeta:'代理死神・虛化使者',
+    events:['第七章・完','你擊退了第一名使者','但更大的黑暗，已然睜眼'],
+    fb:{type:'good', v:'你掌握了新的力量，也窺見了新的威脅。'},
+    text:[
+      {t:'n', x:'宵闇的身影在漆黑的裂縫中緩緩隱沒。消失前，他那雙隱於陰影的眼睛裡，似乎掠過一絲<emph>滿意</emph>的笑意。'},
+      {t:'dialog', x:'「很好……很好。果然值得『那位』親自一見。我們，靈王宮的盡頭再會。」'},
+      {t:'n', x:'裂縫闔上，壓抑的虛無靈壓隨之消散。靈廷的夜空，重歸寧靜。你緩緩摘下臉上的虛面，靈壓平復下來，遍體鱗傷卻屹立不倒。'},
+      {t:'cond', c7_vow:[
+        {t:'n', x:'凛快步奔到你身邊，這一次，她沒有絲毫猶豫地抱住了你。「你回來了……你真的，遵守了承諾。」她的聲音帶著哽咽，「太好了……真的太好了。」'},
+        {t:'think', x:'我答應過她，要贏，然後回到她身邊。這個承諾，我做到了。'}
+      ], def:[
+        {t:'n', x:'凛快步奔來，仔細檢查你的傷勢，鬆了口氣後又忍不住數落：「真是的，每次都把自己搞得這麼狼狽……不過，你又變強了呢。」' }
+      ]},
+      {t:'n', x:'你抬頭望向那片宵闇消失的夜空。綾小路的預言、靈王宮彼端「沉睡的存在」、如今又現身的「闇之使者」——一條通往世界終極真相的線索，已然清晰地展現在你面前。'},
+      {t:'n', x:''},
+      {t:'h2', x:'第七章・完'},
+      {t:'n', x:'<emph>—— 你戰勝了內在之虛，掌握了死神與虛融合的「虛面」之力，並擊退了來自靈王宮彼端的第一名使者・宵闇。</emph>'},
+      {t:'n', x:'「靈王篇」的序幕，就此拉開。沉睡在世界盡頭的「那位」、搖搖欲墜的靈王體制、即將席捲一切的終極之戰……<NAME>與霜月凛的傳奇，仍將繼續。'},
+      {t:'think', x:'（第八章「靈王宮」——你的故事，未完待續。感謝你一路的陪伴。）'}
+    ],
+    choices:[
+      { c:'☆ 查看你的第七章旅程總結', to:'__summary7__', fx:{}, ev:'' },
       { c:'↺ 從第一章重新開始，譜寫不同的命運', to:'__restart__', fx:{}, ev:'' }
     ]
   }
@@ -1642,7 +1851,9 @@ const CHAPTERS = {
   5: ['戰後的靈廷','破面的襲擊','茜被擄走','虛界之門','白色沙漠',
       '虛夜白塔','第五章・完'],
   6: ['闖入白塔','破面・碎牙','囚われの茜','綾小路・再臨','真・卍解',
-      '終焉之戰','第六章・完']
+      '終焉之戰','第六章・完'],
+  7: ['不安的徵兆','虛化暴走','黑丸玄的警告','内なる世界','與虛的對決',
+      '掌控虛面','闇之使者','第七章・完']
 };
 
 /* ════════════════════════════════════════════════════════
@@ -1681,6 +1892,7 @@ function renderNode(id) {
 
   // node-enter state
   if (node.restore) { S.hp = 100; S.mp = 100; S.sta = 100; }
+  if (node.unlockHollow) S.hollowUnlocked = true;
   if (node.setState) { for (const k of ['hp','mp','sta','reiatsu','zanName','zanState']) if (node.setState[k] !== undefined) S[k] = node.setState[k]; }
   if (node.reiatsuSet) S.reiatsu = node.reiatsuSet;
   if (node.badge) S.badge = node.badge;
@@ -1809,6 +2021,7 @@ function startBattle(bat, winTo){
              special:bat.enemy.special||'強力一擊', charging:false },
     pHp: pMax, pMax, pMp: 100,
     form: 'sealed', atkMul: 1, releaseUsed: false,
+    hollowOn:false, hollowTurns:0, hollowCD:0,
     guard:false, dodgePend:false, turn:0, log:[], win:winTo, over:false
   };
   B.log.push({ c:'system', t: bat.intro || '戰鬥開始！' });
@@ -1833,7 +2046,7 @@ function renderBattle(){
       </div>
       <div class="combat-log">${logHtml}</div>
       <div class="combat-player">
-        <div class="cb-name"><span class="cb-player-name">${S.name}</span><span class="cb-tag">${FORM_LABEL[B.form]}</span></div>
+        <div class="cb-name"><span class="cb-player-name">${S.name}</span><span class="cb-tag">${FORM_LABEL[B.form]}${B.hollowOn?' <span style="color:#c060e0">・虛面('+B.hollowTurns+')</span>':''}</span></div>
         <div class="cb-hpbar-bg"><div class="cb-hpbar player" style="width:${pPct}%"></div></div>
         <div class="cb-hptext">HP ${Math.max(0,Math.round(B.pHp))} / ${B.pMax}</div>
         <div class="cb-mpbar-bg"><div class="cb-mpbar" style="width:${mpPct}%"></div></div>
@@ -1856,6 +2069,9 @@ function renderBattleActions(){
   if (B.bat.release && !B.releaseUsed && canRelease(B.bat.release)) {
     acts.push({ name:'解放 '+REL_NAME[B.bat.release], desc:'消耗 20 靈力・大幅強化＋回復', cls:'release', dis:B.pMp<20, fn:()=>act('release') });
   }
+  if (S.hollowUnlocked && !B.hollowOn && B.hollowCD === 0) {
+    acts.push({ name:'虛面解放', desc:'消耗 30 靈力・攻擊×1.6＋吸血，數回合後碎裂反噬', cls:'hollow', dis:B.pMp<30, fn:()=>act('hollow') });
+  }
   acts.push({ name:'防禦', desc:'大幅減傷・回復靈力與體力', fn:()=>act('guard') });
   acts.push({ name:'閃避', desc:'有機率完全迴避下一擊', fn:()=>act('dodge') });
   const grid = document.createElement('div');
@@ -1871,24 +2087,39 @@ function renderBattleActions(){
   box.appendChild(grid);
 }
 
+function hollowMul(){ return B.hollowOn ? 1.6 : 1; }
+function lifesteal(dmg){
+  if (!B.hollowOn) return;
+  const heal = Math.round(dmg * 0.35);
+  B.pHp = Math.min(B.pMax, B.pHp + heal);
+  B.log.push({ c:'heal', t:`虛面汲取了敵人的靈魂，回復 ${heal} 點體力。` });
+}
+
 function act(type){
   if (B.over) return;
   const e = B.enemy;
   if (type === 'basic') {
-    let d = playerAtk() * B.atkMul * rand(0.85,1.15);
+    let d = playerAtk() * B.atkMul * hollowMul() * rand(0.85,1.15);
     const crit = Math.random() < critChance(); if (crit) d *= 1.6;
     d = Math.round(d); e.hp -= d; B.pMp = Math.min(100, B.pMp+8);
-    B.log.push({ c:crit?'crit':'you', t:`你揮出${B.form==='sealed'?'一刀':'『曙』'}，造成 ${d} 傷害${crit?'（暴擊！）':''}。` });
+    B.log.push({ c:crit?'crit':'you', t:`你揮出${B.hollowOn?'虛面亂舞':(B.form==='sealed'?'一刀':'『曙』')}，造成 ${d} 傷害${crit?'（暴擊！）':''}。` });
+    lifesteal(d);
   } else if (type === 'skill') {
     B.pMp -= 25;
-    let d = playerAtk() * B.atkMul * 1.9 * rand(0.9,1.1);
+    let d = playerAtk() * B.atkMul * hollowMul() * 1.9 * rand(0.9,1.1);
     const crit = Math.random() < critChance(); if (crit) d *= 1.6;
     d = Math.round(d); e.hp -= d;
-    B.log.push({ c:crit?'crit':'you', t:`你詠唱鬼道・赤火炮，轟出 ${d} 傷害${crit?'（暴擊！）':''}。` });
+    B.log.push({ c:crit?'crit':'you', t:`你${B.hollowOn?'轟出虛閃（Cero）':'詠唱鬼道・赤火炮'}，造成 ${d} 傷害${crit?'（暴擊！）':''}。` });
+    lifesteal(d);
   } else if (type === 'release') {
     B.pMp -= 20; B.releaseUsed = true; B.form = B.bat.release;
     B.atkMul = REL_MULT[B.bat.release]; B.pHp = Math.min(B.pMax, B.pHp+25);
     B.log.push({ c:'heal', t:`你解放了【${REL_NAME[B.bat.release]}】！攻擊力大幅提升，傷勢也得到回復。` });
+  } else if (type === 'hollow') {
+    B.pMp -= 30; B.hollowOn = true;
+    B.hollowRisky = B.pHp < B.pMax * 0.3;
+    B.hollowTurns = 4;
+    B.log.push({ c:'crit', t:`你的臉上覆上了【虛面】！靈壓暴漲，攻擊大幅強化，攻擊將汲取敵人靈魂回血——但它撐不了太久。${B.hollowRisky?'（體力低下，虛化反噬將更劇烈！）':''}` });
   } else if (type === 'guard') {
     B.guard = true; B.pMp = Math.min(100, B.pMp+12); B.pHp = Math.min(B.pMax, B.pHp+6);
     B.log.push({ c:'system', t:'你擺出架式，準備抵擋下一擊。' });
@@ -1919,7 +2150,7 @@ function enemyTurn(){
     B.dodgePend = false;
     if (Math.random() < dodgeChance()) {
       B.log.push({ c:'you', t:`你以瞬步閃過了 ${e.name} 的攻擊！` });
-      renderBattle(); return;
+      finishRound(); return;
     }
     B.log.push({ c:'system', t:'閃避失敗……' });
   }
@@ -1931,6 +2162,25 @@ function enemyTurn(){
   }
   B.pHp -= dmg;
   if (B.pHp <= 0) { defeat(); return; }
+  finishRound();
+}
+
+function finishRound(){
+  // 虛化 upkeep — duration & backlash
+  if (B.hollowOn) {
+    B.hollowTurns--;
+    if (B.hollowTurns <= 0) {
+      B.hollowOn = false;
+      const back = Math.round(B.pMax * (B.hollowRisky ? 0.30 : 0.15));
+      B.pHp -= back;
+      B.hollowCD = 2;
+      B.log.push({ c:'system', t:`虛面碎裂——強行虛化的反噬，奪走了 ${back} 點體力。（虛面冷卻中）` });
+      if (B.pHp <= 0) { defeat(); return; }
+    }
+  } else if (B.hollowCD > 0) {
+    B.hollowCD--;
+    if (B.hollowCD === 0) B.log.push({ c:'system', t:'虛面已可再次解放。' });
+  }
   renderBattle();
 }
 
@@ -1976,6 +2226,7 @@ function choose(ch) {
   if (ch.to === '__summary4__') { showSummary(4); return; }
   if (ch.to === '__summary5__') { showSummary(5); return; }
   if (ch.to === '__summary6__') { showSummary(6); return; }
+  if (ch.to === '__summary7__') { showSummary(7); return; }
   applyFx(ch.fx, ch.flag);
   renderNode(ch.to);
 }
@@ -2004,6 +2255,8 @@ function updateSidebar(node) {
   } else {
     document.getElementById('zan-card').style.display = 'none';
   }
+
+  document.getElementById('hollow-card').style.display = S.hollowUnlocked ? '' : 'none';
 
   setText('t-courage', S.courage);
   setText('t-calm', S.calm);
@@ -2039,7 +2292,22 @@ function showSummary(chapter) {
 
   let title, lines;
 
-  if (chapter === 6) {
+  if (chapter === 7) {
+    let style;
+    if (f.c7_control) style = '【人虛共存】你沒有壓制內在之虛，而是與它達成共存——力量與理智並行不悖。';
+    else if (f.c7_dominate) style = '【絕對支配】你以壓倒性的意志制伏了內在之虛，讓它徹底臣服於你的掌控。';
+    else style = '【直面內心】你正視了靈魂深處的黑暗，並將它化為己用。';
+
+    title = '第七章 · 旅程總結';
+    lines = `
+      <p class="narration"><span class="emph">${S.name}</span> 的覺醒之路</p>
+      <p class="narration">▸ 內心之戰：<span class="emph">${style}</span></p>
+      <p class="narration">▸ 當前靈壓：<span class="emph">${S.reiatsu}</span></p>
+      <p class="narration">▸ 力量：<span class="emph">真・卍解「曙・天照」</span> ＋ <span style="color:#c878e0">虛面（虛化）</span></p>
+      <p class="narration">▸ 與凛的羈絆：<span class="emph">${bondLabel}</span></p>
+      <p class="thought">你戰勝了內在之虛，掌握了介於死神與虛之間的「虛面」之力。但一名來自靈王宮彼端的「闇之使者」現身，預示著更黑暗的戰爭即將降臨。</p>
+      <p class="thought">真正的敵人，仍沉睡在世界的盡頭。而你的旅程，未完待續。</p>`;
+  } else if (chapter === 6) {
     let style;
     if (f.c6_shieldAll) style = '【天照之盾】你的真・卍解，化作守護三界的光，不容任何黑暗染指所愛之人。';
     else if (f.c6_wrath) style = '【裁decisive斷之光】你以煌天輪的烈焰，親手終結了那場褻瀆生死的陰謀。';
@@ -2134,7 +2402,7 @@ function showSummary(chapter) {
       <h2>${title}</h2>
       ${lines}
       <hr style="border:none;border-top:1px solid var(--border);margin:18px 0">
-      <p class="narration" style="text-align:center;color:var(--text-dim)">${chapter === 6 ? '第二部「虛圈篇」・完結。<br>感謝你陪伴 ' + S.name + ' 走過這場橫跨三界的旅程。' : chapter === 4 ? '第一部「救援篇」・完結。' : '感謝你的遊玩。'}</p>
+      <p class="narration" style="text-align:center;color:var(--text-dim)">${chapter === 7 ? '第三部「靈王篇」・序章。<br>更黑暗的戰爭，即將揭幕。' : chapter === 6 ? '第二部「虛圈篇」・完結。<br>感謝你陪伴 ' + S.name + ' 走過這場橫跨三界的旅程。' : chapter === 4 ? '第一部「救援篇」・完結。' : '感謝你的遊玩。'}</p>
     </div>`;
   const box = document.getElementById('choices');
   box.innerHTML = '';
@@ -2152,7 +2420,7 @@ function doRestart() {
   const name = S.name;
   S = { name, hp:100, mp:100, sta:100, reiatsu:15, courage:0, calm:0, sense:0, bond:0,
         badge:'尚未覺醒', charMeta:'人類・空座町高中生', zanName:null, zanState:'sealed',
-        flags:{}, node:'c1_00', visited:[] };
+        hollowUnlocked:false, flags:{}, node:'c1_00', visited:[] };
   localStorage.setItem('bleach_story_save', JSON.stringify(S));
   renderNode('c1_00');
 }
