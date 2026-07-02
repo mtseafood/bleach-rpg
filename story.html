@@ -246,6 +246,30 @@
     box-shadow:0 6px 24px rgba(0,0,0,.5); transform:translateX(140%); transition:transform .4s cubic-bezier(.2,.8,.2,1); }
   .ach-toast.show { transform:translateX(0); }
 
+  /* COMBAT JUICE — floating damage, shake, ult gauge */
+  .combat-enemy, .combat-player { position:relative; overflow:visible; }
+  .dmg-float { position:absolute; right:24px; top:6px; font-size:22px; font-weight:900; pointer-events:none;
+    color:#ff7060; text-shadow:0 2px 8px rgba(0,0,0,.8); animation:dmgUp 1s ease-out forwards; z-index:5; }
+  .dmg-float.crit { color:var(--accent2); font-size:28px; text-shadow:0 0 14px rgba(255,170,0,.8); }
+  .dmg-float.heal { color:#60d890; }
+  .dmg-float.p2 { left:24px; right:auto; }
+  @keyframes dmgUp { 0%{transform:translateY(0);opacity:1} 100%{transform:translateY(-34px);opacity:0} }
+  .combat.shake { animation:shakeX .4s; }
+  @keyframes shakeX { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(7px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(3px)} }
+  .ult-bar-bg { height:9px; background:#1a1a2a; border-radius:5px; overflow:hidden; margin-top:7px; border:1px solid #3a2a10; }
+  .ult-bar { height:100%; background:linear-gradient(90deg,#7a4a00,var(--gold),#ffe680); transition:width .4s; }
+  .ult-bar.ready { animation:ultPulse 1s infinite; }
+  @keyframes ultPulse { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.6)} }
+  .cb-action.ult { border-color:var(--gold); background:#141005; }
+  .cb-action.ult:hover:not(:disabled) { border-color:#ffe680; background:#1e1808; box-shadow:0 0 16px rgba(255,210,74,.25); }
+  .cb-action.ult .cb-act-name { color:#ffd24a; }
+  .cb-action.counter { border-color:#8a2a2a; }
+  .cb-action.counter:hover:not(:disabled) { border-color:#ff6a5a; background:#1a0a08; }
+  .cb-action.counter .cb-act-name { color:#ff8a70; }
+  .cb-mod { font-size:11px; color:#c8a8ff; margin-top:6px; }
+  .phase2-banner { text-align:center; padding:10px; margin-bottom:12px; border:1px solid #7a2a3a; border-radius:8px;
+    background:linear-gradient(180deg,#1a0810,#12060a); color:#ff8098; font-weight:700; letter-spacing:2px; animation:fadeIn .5s; }
+
   /* MODAL */
   #modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.9); backdrop-filter:blur(8px);
     display:flex; align-items:center; justify-content:center; z-index:1000; }
@@ -434,6 +458,8 @@ const ACHIEVEMENTS = [
   { id:'hollow',     icon:'👹', title:'虛面初解', desc:'在戰鬥中解放虛面' },
   { id:'vizard',     icon:'🎭', title:'虛聖',     desc:'掌控死神與虛融合之力' },
   { id:'flawless',   icon:'✨', title:'完　勝',   desc:'毫髮無傷地贏得一場戰鬥' },
+  { id:'ult',        icon:'⚡', title:'奧義初咲', desc:'釋放蓄滿的奧義' },
+  { id:'counter',    icon:'🌀', title:'看破一切', desc:'成功看破敵人的蓄力技並反擊' },
   { id:'rankS',      icon:'🌟', title:'絕刃',     desc:'取得 S 級戰鬥評價' },
   { id:'shura',      icon:'🔥', title:'修羅道',   desc:'在修羅難度下獲勝' },
   { id:'bondMax',    icon:'💞', title:'生死之交', desc:'與凛的羈絆達到極致' },
@@ -1609,6 +1635,8 @@ const STORY = {
     battle:{
       enemy:{ name:'破面・藍鬼', hp:280, atk:23, specialMult:2.4, specialEvery:3, special:'大虛閃（Gran Rey Cero）' },
       release:'bankai',
+      phase2:{ name:'藍鬼・歸刃「蒼牙咆哮」', atkMul:1.3, healFrac:0.2,
+        text:'藍鬼怒吼著將白刀橫在胸前——「歸刃……『蒼牙咆哮』！」他的身軀被藍白色的獸型鎧甲包裹，靈壓暴漲，速度與殺意都提升到了另一個次元！' },
       intro:'藍鬼拔出白刀，響轉的殘影瞬間佈滿大廳——雪恥之戰，開始！',
       winText:'這一次，你沒有再讓他逃走。卍解的金光貫穿了藍鬼的胸膛。「一個……人類……竟然……」他難以置信地瞪著你，化作光點消散。茜的下落，已在眼前。'
     },
@@ -1680,6 +1708,8 @@ const STORY = {
     battle:{
       enemy:{ name:'破面化的綾小路冥', hp:380, atk:30, specialMult:2.6, specialEvery:3, special:'黑棺・虛閃融合' },
       release:'true',
+      phase2:{ name:'綾小路冥・完全虛神形態', atkMul:1.35, healFrac:0.22,
+        text:'綾小路冥發出瘋狂的大笑，親手捏碎了自己剩餘的半張人臉——「就讓你看看……神的完全體吧！」白骨面具徹底覆滿他的臉，黑金靈壓沖天而起！' },
       intro:'綾小路冥的黑金靈壓與你的曙光正面碰撞——三界命運的終焉之戰，開始！',
       winText:'白色的聖焰貫穿了綾小路冥破面化的軀體。「為什麼……我明明就要成神了——」他的面具碎裂，永夜的虛圈，被你的光染成了黎明的金色。'
     },
@@ -1858,6 +1888,8 @@ const STORY = {
     battle:{
       enemy:{ name:'内在之虛（白面の自己）', hp:440, atk:33, specialMult:2.5, specialEvery:3, special:'虛閃・白' },
       release:'true',
+      phase2:{ name:'内在之虛・白の天照', atkMul:1.3, healFrac:0.2,
+        text:'白色的你咧嘴狂笑，舉起純白的『曙』——「還沒完呢，王！讓你嚐嚐『你自己』的全力！」純白的日輪在它背後展開，那是顛倒配色的、你的真・卍解！' },
       intro:'白色的你舉起純白的『曙』，鏡像之戰——開始！戰勝它，奪回身體的主導權！',
       winText:'你的金焰太刀，壓制了純白的鏡像。內在之虛踉蹌跪地，臉上的瘋狂漸漸化為一抹了然的笑——你，贏得了這具身體的主導權。'
     },
@@ -1911,6 +1943,8 @@ const STORY = {
     battle:{
       enemy:{ name:'闇之使者・宵闇', hp:480, atk:35, specialMult:2.6, specialEvery:3, special:'虛無崩落' },
       release:'true',
+      phase2:{ name:'宵闇・虛無展開', atkMul:1.35, healFrac:0.2,
+        text:'宵闇緩緩張開雙臂，周身的空間開始崩解成純粹的「無」——「餘興到此為止。接下來，是『那位』賜予的力量。」' },
       intro:'宵闇的漆黑靈壓籠罩靈廷——試煉你的使者，降臨！（試著解放虛面，感受新的力量！）',
       winText:'你以死神、卍解與虛面交織的力量，重創了宵闇。他不退反笑，似乎對你的成長「很滿意」，隨即遁入了漆黑的裂縫。第一場試煉，你通過了。'
     },
@@ -2160,10 +2194,36 @@ function startBattle(bat, winTo){
     form: 'sealed', atkMul: 1, releaseUsed: false,
     hollowOn:false, hollowTurns:0, hollowCD:0,
     focus:false, dmgTaken:0, itemMenu:false,
+    ult:0, counterPend:false, phased:false, fxq:[], shakeNext:false,
     guard:false, dodgePend:false, turn:0, log:[], win:winTo, over:false
   };
   B.log.push({ c:'system', t: bat.intro || '戰鬥開始！' });
+  if (bat.mod) B.log.push({ c:'system', t:'【戰場異變】' + bat.mod });
   renderBattle();
+}
+
+function gainUlt(n){ B.ult = Math.min(100, B.ult + n * (B.bat.ultGainMul || 1)); }
+function ultName(){
+  if (B.form === 'true')  return '奧義・天照滅焰';
+  if (B.form === 'bankai') return '奧義・煌天輪崩焰';
+  return '奧義・曙光一閃';
+}
+function spawnFx(){
+  const map = { enemy:'.combat-enemy', player:'.combat-player' };
+  (B.fxq||[]).forEach(fx => {
+    const card = document.querySelector(map[fx.side]); if (!card) return;
+    const f = document.createElement('div');
+    f.className = 'dmg-float ' + (fx.cls||'') + (fx.side==='player'?' p2':'');
+    f.textContent = fx.v;
+    card.appendChild(f);
+    setTimeout(() => f.remove(), 1000);
+  });
+  B.fxq = [];
+  if (B.shakeNext) {
+    B.shakeNext = false;
+    const c = document.querySelector('.combat');
+    if (c) { c.classList.add('shake'); setTimeout(() => c.classList.remove('shake'), 450); }
+  }
 }
 
 function renderBattle(){
@@ -2189,11 +2249,15 @@ function renderBattle(){
         <div class="cb-hptext">HP ${Math.max(0,Math.round(B.pHp))} / ${B.pMax}</div>
         <div class="cb-mpbar-bg"><div class="cb-mpbar" style="width:${mpPct}%"></div></div>
         <div class="cb-hptext">靈力 ${Math.round(B.pMp)} / 100</div>
+        <div class="ult-bar-bg"><div class="ult-bar ${B.ult>=100?'ready':''}" style="width:${Math.round(B.ult)}%"></div></div>
+        <div class="cb-hptext">奧義 ${Math.round(B.ult)} / 100${B.ult>=100?'　<span style="color:var(--gold)">— 已就緒！</span>':''}</div>
+        ${B.bat.mod ? `<div class="cb-mod">☄ ${B.bat.mod}</div>` : ''}
       </div>
     </div>`;
   const story = document.getElementById('story');
   const logEl = story.querySelector('.combat-log');
   if (logEl) logEl.scrollTop = logEl.scrollHeight;
+  spawnFx();
   if (!B.over) renderBattleActions();
 }
 
@@ -2226,6 +2290,12 @@ function renderBattleActions(){
     { name:'斬擊', desc:'基礎攻擊・回復少量靈力', fn:()=>act('basic') },
     { name:'鬼道', desc:'消耗 25 靈力・強力攻擊', dis:B.pMp<25, fn:()=>act('skill') }
   ];
+  if (B.ult >= 100) {
+    acts.unshift({ name:'⚡ ' + ultName(), desc:'釋放蓄滿的靈壓・巨大傷害＋回復', cls:'ult', fn:()=>act('ult') });
+  }
+  if (B.enemy.charging) {
+    acts.push({ name:'看破', desc:'賭上靈感迎擊蓄力技——成功則無效化並反擊，失敗承受更重傷害', cls:'counter', fn:()=>act('counter') });
+  }
   if (B.bat.release && !B.releaseUsed && canRelease(B.bat.release)) {
     acts.push({ name:'解放 '+REL_NAME[B.bat.release], desc:'消耗 20 靈力・大幅強化＋回復', cls:'release', dis:B.pMp<20, fn:()=>act('release') });
   }
@@ -2256,29 +2326,49 @@ function lifesteal(dmg){
   if (!B.hollowOn) return;
   const heal = Math.round(dmg * 0.35);
   B.pHp = Math.min(B.pMax, B.pHp + heal);
+  B.fxq.push({ side:'player', v:'+'+heal, cls:'heal' });
   B.log.push({ c:'heal', t:`虛面汲取了敵人的靈魂，回復 ${heal} 點體力。` });
 }
 
 function act(type){
   if (B.over) return;
   const e = B.enemy;
+  const pAtk = () => playerAtk() * (B.bat.pAtkMul || 1);
   if (type === 'basic') {
-    let d = playerAtk() * B.atkMul * hollowMul() * rand(0.85,1.15);
+    let d = pAtk() * B.atkMul * hollowMul() * rand(0.85,1.15);
     let crit = Math.random() < critChance();
     if (B.focus) { crit = true; d *= 1.7; B.focus = false; }
     if (crit) { d *= 1.6; unlockAch('crit'); }
     d = Math.round(d); e.hp -= d; B.pMp = Math.min(100, B.pMp+8);
+    gainUlt(16);
+    B.fxq.push({ side:'enemy', v:'-'+d, cls:crit?'crit':'' });
     B.log.push({ c:crit?'crit':'you', t:`你揮出${B.hollowOn?'虛面亂舞':(B.form==='sealed'?'一刀':'『曙』')}，造成 ${d} 傷害${crit?'（暴擊！）':''}。` });
     lifesteal(d);
   } else if (type === 'skill') {
     B.pMp -= 25;
-    let d = playerAtk() * B.atkMul * hollowMul() * 1.9 * rand(0.9,1.1);
+    let d = pAtk() * B.atkMul * hollowMul() * 1.9 * rand(0.9,1.1);
     let crit = Math.random() < critChance();
     if (B.focus) { crit = true; d *= 1.7; B.focus = false; }
     if (crit) { d *= 1.6; unlockAch('crit'); }
     d = Math.round(d); e.hp -= d;
+    gainUlt(22);
+    B.fxq.push({ side:'enemy', v:'-'+d, cls:crit?'crit':'' });
     B.log.push({ c:crit?'crit':'you', t:`你${B.hollowOn?'轟出虛閃（Cero）':'詠唱鬼道・赤火炮'}，造成 ${d} 傷害${crit?'（暴擊！）':''}。` });
     lifesteal(d);
+  } else if (type === 'ult') {
+    B.ult = 0;
+    let d = Math.round(pAtk() * B.atkMul * hollowMul() * 3.8 * rand(0.95,1.1));
+    e.hp -= d;
+    const h = Math.round(B.pMax * 0.12);
+    B.pHp = Math.min(B.pMax, B.pHp + h);
+    B.shakeNext = true;
+    unlockAch('ult');
+    B.fxq.push({ side:'enemy', v:'-'+d, cls:'crit' });
+    B.fxq.push({ side:'player', v:'+'+h, cls:'heal' });
+    B.log.push({ c:'crit', t:`你將蓄滿的靈壓盡數解放——【${ultName()}】！光之奔流吞沒敵人，造成 ${d} 巨大傷害，你的氣勢也隨之回復 ${h} 點體力！` });
+  } else if (type === 'counter') {
+    B.counterPend = true;
+    B.log.push({ c:'system', t:'你不退反進，凝神直視那道蓄滿的靈壓——賭上一切，看破它！' });
   } else if (type === 'release') {
     B.pMp -= 20; B.releaseUsed = true; B.form = B.bat.release;
     B.atkMul = REL_MULT[B.bat.release]; B.pHp = Math.min(B.pMax, B.pHp+25);
@@ -2292,13 +2382,28 @@ function act(type){
     B.log.push({ c:'crit', t:`你的臉上覆上了【虛面】！靈壓暴漲，攻擊大幅強化，攻擊將汲取敵人靈魂回血——但它撐不了太久。${B.hollowRisky?'（體力低下，虛化反噬將更劇烈！）':''}` });
   } else if (type === 'guard') {
     B.guard = true; B.pMp = Math.min(100, B.pMp+12); B.pHp = Math.min(B.pMax, B.pHp+6);
+    gainUlt(10);
     B.log.push({ c:'system', t:'你擺出架式，準備抵擋下一擊。' });
   } else if (type === 'dodge') {
     B.dodgePend = true;
+    gainUlt(8);
     B.log.push({ c:'system', t:'你壓低重心，準備以瞬步閃避。' });
   }
   if (e.hp <= 0) { victory(); return; }
+  checkPhase2();
   enemyTurn();
+}
+
+function checkPhase2(){
+  const e = B.enemy, p2 = B.bat.phase2;
+  if (!p2 || B.phased || e.hp <= 0 || e.hp > e.maxHp * 0.5) return;
+  B.phased = true;
+  e.name = p2.name;
+  e.atk *= (p2.atkMul || 1.3);
+  e.hp = Math.min(e.maxHp, e.hp + e.maxHp * (p2.healFrac || 0.18));
+  e.specialEvery = Math.max(2, (e.specialEvery || 3) - 1);
+  B.shakeNext = true;
+  B.log.push({ c:'crit', t:`【第二階段】${p2.text}` });
 }
 
 function enemyTurn(){
@@ -2316,6 +2421,28 @@ function enemyTurn(){
   }
   dmg = Math.round(dmg);
 
+  // 看破 — counter the telegraphed special
+  if (B.counterPend) {
+    B.counterPend = false;
+    if (special) {
+      const chance = Math.min(0.9, 0.45 + S.sense * 0.018);
+      if (Math.random() < chance) {
+        const cd = Math.round(playerAtk() * (B.bat.pAtkMul||1) * B.atkMul * hollowMul() * 2.2);
+        e.hp -= cd;
+        gainUlt(30);
+        B.shakeNext = true;
+        unlockAch('counter');
+        B.fxq.push({ side:'enemy', v:'-'+cd, cls:'crit' });
+        B.log.push({ c:'crit', t:`看破成功！你側身滑入${e.name}的死角，將那記蓄力技盡數卸開，反手斬出致命一擊——造成 ${cd} 傷害！` });
+        if (e.hp <= 0) { victory(); return; }
+        checkPhase2();
+        finishRound(); return;
+      }
+      dmg = Math.round(dmg * 1.35);
+      B.log.push({ c:'system', t:'看破失敗——你賭輸了，那一擊比預想的更沉重！' });
+    }
+  }
+
   if (B.dodgePend) {
     B.dodgePend = false;
     if (Math.random() < dodgeChance()) {
@@ -2332,6 +2459,9 @@ function enemyTurn(){
   }
   B.pHp -= dmg;
   B.dmgTaken += dmg;
+  gainUlt(Math.min(25, dmg * 0.4));
+  B.fxq.push({ side:'player', v:'-'+dmg, cls: special?'crit':'' });
+  if (special) B.shakeNext = true;
   if (B.pHp <= 0) { defeat(); return; }
   finishRound();
 }
@@ -2432,14 +2562,30 @@ function openArena(){
 
 function startArena(tier){ arenaTier = tier; closePanel(); launchArenaBattle(); }
 
+const ARENA_MODS = [
+  null, null,
+  { t:'血月高懸——殺意瀰漫，雙方攻擊力+30%', pAtkMul:1.3, eatk:1.3 },
+  { t:'靈壓亂流——奧義計量累積速度加倍', ultGainMul:2 },
+  { t:'硬質之影——敵人HP+40%，但攻擊-20%', ehp:1.4, eatk:0.8 },
+  { t:'狂化之影——敵人攻擊+35%，但HP-25%', ehp:0.75, eatk:1.35 }
+];
+
 function launchArenaBattle(){
   const t = arenaTier;
+  const mod = ARENA_MODS[Math.floor(rand(0, ARENA_MODS.length))];
+  let hp = Math.round(110 + t*72), atk = 11 + t*4.6;
+  if (mod) { hp = Math.round(hp * (mod.ehp||1)); atk *= (mod.eatk||1); }
   const bat = {
     arena: true,
-    enemy: { name:`虛之化身・第${t}階（${arenaName(t)}）`, hp:Math.round(110 + t*72), atk:11 + t*4.6,
+    enemy: { name:`虛之化身・第${t}階（${arenaName(t)}）`, hp, atk,
              specialMult:2.2 + t*0.04, specialEvery:3, special:'虛閃亂舞' },
     release: S.zanState !== 'sealed' ? S.zanState : null,
     intro: `虛之修練場・第 ${t} 階——${arenaName(t)} 現身！`,
+    mod: mod ? mod.t : null,
+    pAtkMul: mod ? (mod.pAtkMul||1) : 1,
+    ultGainMul: mod ? (mod.ultGainMul||1) : 1,
+    phase2: t >= 4 ? { name:`虛之化身・第${t}階【暴走】`, atkMul:1.25, healFrac:0.15,
+      text:'虛之化身的面具迸出裂痕——它咆哮著撕開自己的軀殼，暴走形態顯現！' } : null
   };
   startBattle(bat, '__arena__');
 }
