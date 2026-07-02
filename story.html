@@ -187,6 +187,65 @@
   .cb-victory { background:#0f1a10; border:1px solid #1d5030; color:#8fd8a0; }
   .cb-defeat { background:#1a0808; border:1px solid #5a2222; color:#dd8888; }
 
+  /* DIFFICULTY PICKER */
+  .diff-picker { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:4px; }
+  .diff-btn { background:var(--bg-input); border:1px solid var(--border); border-radius:6px; padding:10px 8px; cursor:pointer; transition:all .15s; text-align:center; }
+  .diff-btn:hover { border-color:var(--accent); }
+  .diff-btn.active { border-color:var(--accent); background:#1a1108; }
+  .diff-name { font-size:14px; font-weight:700; color:var(--text); }
+  .diff-btn.active .diff-name { color:var(--accent2); }
+  .diff-desc { font-size:10px; color:var(--text-muted); margin-top:3px; line-height:1.3; }
+
+  /* COMBAT ITEMS + RANK */
+  .cb-rank { font-size:40px; font-weight:900; line-height:1; margin-bottom:4px; }
+  .cb-rank.S { color:#ffd24a; text-shadow:0 0 16px rgba(255,210,74,.7); }
+  .cb-rank.A { color:#ff8030; text-shadow:0 0 12px rgba(255,128,48,.5); }
+  .cb-rank.B { color:#7ec8ff; }
+  .cb-rank.C { color:var(--text-dim); }
+  .cb-reward { font-size:12px; color:#8fd8a0; margin-top:6px; }
+  .cb-action.item { border-color:#2a5a4a; }
+  .cb-action.item:hover:not(:disabled) { border-color:#40c090; background:#08160f; }
+  .cb-action.item .cb-act-name { color:#6fd0a0; }
+  .cb-action.back { border-color:#3a3a4a; }
+
+  /* GENERIC PANEL MODAL (achievements / arena) */
+  #panel-overlay { position:fixed; inset:0; background:rgba(0,0,0,.9); backdrop-filter:blur(8px);
+    display:flex; align-items:center; justify-content:center; z-index:1100; }
+  #panel-overlay.hidden { display:none; }
+  .panel { background:var(--bg-panel); border:1px solid var(--border); border-radius:12px;
+    padding:28px 32px; width:560px; max-width:95vw; max-height:88vh; overflow-y:auto; animation:slideUp .35s ease; }
+  .panel::-webkit-scrollbar { width:5px; } .panel::-webkit-scrollbar-thumb { background:#2a2a3a; border-radius:3px; }
+  .panel h2 { font-size:20px; color:var(--accent); text-align:center; letter-spacing:3px; margin-bottom:6px; }
+  .panel .psub { text-align:center; font-size:12px; color:var(--text-dim); margin-bottom:20px; }
+  .panel-close { width:100%; background:var(--bg-input); border:1px solid var(--border); color:var(--text-dim);
+    padding:11px; border-radius:6px; cursor:pointer; letter-spacing:2px; margin-top:18px; transition:all .2s; }
+  .panel-close:hover { border-color:var(--accent); color:var(--accent); }
+
+  .ach-item { display:flex; gap:12px; align-items:center; padding:11px 14px; border:1px solid var(--border);
+    border-radius:8px; margin-bottom:8px; background:var(--bg-card); }
+  .ach-item.locked { opacity:.45; }
+  .ach-icon { font-size:22px; width:30px; text-align:center; flex-shrink:0; }
+  .ach-body { flex:1; }
+  .ach-title { font-size:14px; font-weight:700; color:var(--text); }
+  .ach-item.locked .ach-title { color:var(--text-dim); }
+  .ach-desc { font-size:11px; color:var(--text-muted); margin-top:2px; }
+  .ach-done { color:#8fd8a0; font-size:11px; font-weight:700; }
+
+  .arena-opt { display:flex; justify-content:space-between; align-items:center; padding:14px 16px;
+    border:1px solid var(--border); border-radius:8px; margin-bottom:10px; background:var(--bg-card);
+    cursor:pointer; transition:all .15s; }
+  .arena-opt:hover { border-color:var(--accent); background:#1a1108; transform:translateX(3px); }
+  .arena-opt .ao-name { font-size:15px; font-weight:700; color:var(--accent2); }
+  .arena-opt .ao-desc { font-size:11px; color:var(--text-muted); margin-top:3px; }
+  .arena-opt .ao-tier { font-size:20px; font-weight:900; color:var(--gold); }
+  .inv-line { display:flex; gap:14px; justify-content:center; font-size:12px; color:var(--text-dim); margin:14px 0; }
+  .inv-line b { color:var(--accent2); }
+
+  .ach-toast { position:fixed; right:20px; bottom:20px; z-index:2000; display:flex; gap:12px; align-items:center;
+    background:var(--bg-panel); border:1px solid var(--accent); border-radius:10px; padding:12px 18px;
+    box-shadow:0 6px 24px rgba(0,0,0,.5); transform:translateX(140%); transition:transform .4s cubic-bezier(.2,.8,.2,1); }
+  .ach-toast.show { transform:translateX(0); }
+
   /* MODAL */
   #modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.9); backdrop-filter:blur(8px);
     display:flex; align-items:center; justify-content:center; z-index:1000; }
@@ -240,9 +299,21 @@
     <div style="text-align:center"><span class="free-badge">完全免費 · 無需金鑰 · 無需網路</span></div>
     <label for="name-input">輸入你的名字</label>
     <input type="text" id="name-input" placeholder="例如：黑崎、藤宮、白井…" maxlength="12" value="">
+    <label style="margin-top:18px">選擇難度（影響戰鬥）</label>
+    <div class="diff-picker" id="diff-picker">
+      <button class="diff-btn" data-diff="easy" onclick="pickDiff('easy')">
+        <div class="diff-name">見習</div><div class="diff-desc">敵人較弱・輕鬆體驗劇情</div></button>
+      <button class="diff-btn active" data-diff="normal" onclick="pickDiff('normal')">
+        <div class="diff-name">死神</div><div class="diff-desc">標準平衡的戰鬥體驗</div></button>
+      <button class="diff-btn" data-diff="hard" onclick="pickDiff('hard')">
+        <div class="diff-name">修羅</div><div class="diff-desc">敵人強悍・考驗戰術</div></button>
+    </div>
     <button class="modal-btn" onclick="startGame()">⚔ 開始第一章</button>
   </div>
 </div>
+
+<!-- GENERIC PANEL (achievements / arena) -->
+<div id="panel-overlay" class="hidden"><div class="panel" id="panel-body"></div></div>
 
 <!-- APP -->
 <div id="app">
@@ -253,6 +324,8 @@
       <div class="logo-sub">離線劇情版 · Chapter Mode</div>
     </div>
     <div class="header-sep"></div>
+    <button class="hbtn" onclick="openArena()">⚔ 修練場</button>
+    <button class="hbtn" onclick="openAchievements()">🏆 成就</button>
     <button class="hbtn" onclick="location.href='index.html'">🤖 AI 自由版</button>
     <button class="hbtn danger" onclick="confirmReset()">↺ 重新開始</button>
   </header>
@@ -333,10 +406,58 @@ let S = {
   charMeta: '人類・空座町高中生',
   zanName: null, zanState: 'sealed',
   hollowUnlocked: false,
+  difficulty: 'normal',
+  items: { heal:2, mp:2, focus:1 },
   flags: {},
   node: 'c1_00',
   visited: []
 };
+
+const DIFF = {
+  easy:   { label:'見習', ehp:0.75, eatk:0.80 },
+  normal: { label:'死神', ehp:1.00, eatk:1.00 },
+  hard:   { label:'修羅', ehp:1.30, eatk:1.28 }
+};
+const ITEM_INFO = {
+  heal:  { name:'回復丹', icon:'💊', desc:'回復 40% 體力' },
+  mp:    { name:'靈壓丹', icon:'🔷', desc:'回復 50 靈力' },
+  focus: { name:'集中符', icon:'📜', desc:'下一次攻擊必定暴擊且傷害提升' }
+};
+
+/* ── 成就系統（跨周目永久保存）── */
+const ACHIEVEMENTS = [
+  { id:'firstWin',   icon:'⚔️', title:'初陣',     desc:'贏得你的第一場戰鬥' },
+  { id:'crit',       icon:'💥', title:'一刀兩斷', desc:'在戰鬥中打出暴擊' },
+  { id:'release',    icon:'🗡️', title:'解放者',   desc:'在戰鬥中解放斬魄刀' },
+  { id:'bankai',     icon:'⭐', title:'卍解使い', desc:'覺醒卍解' },
+  { id:'truebankai', icon:'☀️', title:'真・卍解', desc:'覺醒真・卍解' },
+  { id:'hollow',     icon:'👹', title:'虛面初解', desc:'在戰鬥中解放虛面' },
+  { id:'vizard',     icon:'🎭', title:'虛聖',     desc:'掌控死神與虛融合之力' },
+  { id:'flawless',   icon:'✨', title:'完　勝',   desc:'毫髮無傷地贏得一場戰鬥' },
+  { id:'rankS',      icon:'🌟', title:'絕刃',     desc:'取得 S 級戰鬥評價' },
+  { id:'shura',      icon:'🔥', title:'修羅道',   desc:'在修羅難度下獲勝' },
+  { id:'bondMax',    icon:'💞', title:'生死之交', desc:'與凛的羈絆達到極致' },
+  { id:'arena5',     icon:'🏯', title:'道場之王', desc:'修練場突破第 5 階' },
+  { id:'clear',      icon:'👑', title:'三界之護', desc:'通關第七章' }
+];
+function loadAch(){ try { return JSON.parse(localStorage.getItem('bleach_ach') || '{}'); } catch(e){ return {}; } }
+function saveAch(){ try { localStorage.setItem('bleach_ach', JSON.stringify(ACH_STATE)); } catch(e){} }
+let ACH_STATE = loadAch();
+function unlockAch(id){
+  if (ACH_STATE[id]) return;
+  ACH_STATE[id] = true; saveAch();
+  toastAch(id);
+}
+function toastAch(id){
+  const a = ACHIEVEMENTS.find(x => x.id === id); if (!a) return;
+  const t = document.createElement('div'); t.className = 'ach-toast';
+  t.innerHTML = `<span style="font-size:22px">${a.icon}</span><div><div style="font-size:9px;letter-spacing:2px;color:var(--text-muted)">成就解鎖</div><div style="font-weight:700;color:var(--accent2)">${a.title}</div></div>`;
+  document.body.appendChild(t);
+  setTimeout(() => t.classList.add('show'), 30);
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3200);
+}
+
+function saveS(){ try { localStorage.setItem('bleach_story_save', JSON.stringify(S)); } catch(e){} }
 
 const REIATSU_LABELS = [
   [15, '沉睡的靈魂'], [40, '微弱的靈覺'], [120, '覺醒的徵兆'],
@@ -1859,9 +1980,16 @@ const CHAPTERS = {
 /* ════════════════════════════════════════════════════════
    ENGINE
 ════════════════════════════════════════════════════════ */
+let pendingDiff = 'normal';
+function pickDiff(d) {
+  pendingDiff = d;
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active', b.dataset.diff === d));
+}
+
 function startGame() {
   const name = document.getElementById('name-input').value.trim() || '黑崎';
   S.name = name;
+  S.difficulty = pendingDiff;
   localStorage.setItem('bleach_story_save', JSON.stringify(S));
   document.getElementById('modal-overlay').classList.add('hidden');
   renderNode('c1_00');
@@ -1897,6 +2025,13 @@ function renderNode(id) {
   if (node.reiatsuSet) S.reiatsu = node.reiatsuSet;
   if (node.badge) S.badge = node.badge;
   if (node.charMeta) S.charMeta = node.charMeta;
+
+  // 成就檢查
+  if (S.zanState === 'bankai') unlockAch('bankai');
+  if (S.zanState === 'true') { unlockAch('bankai'); unlockAch('truebankai'); }
+  if (S.hollowUnlocked) unlockAch('vizard');
+  if (S.bond >= 14) unlockAch('bondMax');
+  if (id === 'c7_end') unlockAch('clear');
 
   localStorage.setItem('bleach_story_save', JSON.stringify(S));
 
@@ -2014,14 +2149,17 @@ function canRelease(form){ return FORM_RANK[S.zanState] >= FORM_RANK[form]; }
 
 function startBattle(bat, winTo){
   const pMax = Math.min(220, 90 + S.courage);
+  const df = DIFF[S.difficulty] || DIFF.normal;
+  const ehp = Math.round(bat.enemy.hp * df.ehp);
   B = {
     bat,
-    enemy: { name:bat.enemy.name, hp:bat.enemy.hp, maxHp:bat.enemy.hp, atk:bat.enemy.atk,
+    enemy: { name:bat.enemy.name, hp:ehp, maxHp:ehp, atk:bat.enemy.atk * df.eatk,
              specialMult:bat.enemy.specialMult||2, specialEvery:bat.enemy.specialEvery||3,
              special:bat.enemy.special||'強力一擊', charging:false },
     pHp: pMax, pMax, pMp: 100,
     form: 'sealed', atkMul: 1, releaseUsed: false,
     hollowOn:false, hollowTurns:0, hollowCD:0,
+    focus:false, dmgTaken:0, itemMenu:false,
     guard:false, dodgePend:false, turn:0, log:[], win:winTo, over:false
   };
   B.log.push({ c:'system', t: bat.intro || '戰鬥開始！' });
@@ -2059,9 +2197,31 @@ function renderBattle(){
   if (!B.over) renderBattleActions();
 }
 
+function mkBtn(name, desc, dis, cls, fn){
+  const b = document.createElement('button');
+  b.className = 'cb-action ' + (cls||'');
+  b.disabled = !!dis;
+  b.innerHTML = `<div class="cb-act-name">${name}</div><div class="cb-act-desc">${desc}</div>`;
+  if (!dis) b.onclick = fn;
+  return b;
+}
+
 function renderBattleActions(){
   const box = document.getElementById('choices');
   box.innerHTML = '';
+  const grid = document.createElement('div');
+  grid.className = 'combat-actions';
+
+  if (B.itemMenu) {
+    ['heal','mp','focus'].forEach(k => {
+      const info = ITEM_INFO[k]; const n = S.items[k] || 0;
+      grid.appendChild(mkBtn(`${info.icon} ${info.name} ×${n}`, info.desc, n <= 0, 'item', () => useItem(k)));
+    });
+    grid.appendChild(mkBtn('← 返回', '回到行動選單', false, 'back', () => { B.itemMenu = false; renderBattle(); }));
+    box.appendChild(grid);
+    return;
+  }
+
   const acts = [
     { name:'斬擊', desc:'基礎攻擊・回復少量靈力', fn:()=>act('basic') },
     { name:'鬼道', desc:'消耗 25 靈力・強力攻擊', dis:B.pMp<25, fn:()=>act('skill') }
@@ -2074,17 +2234,21 @@ function renderBattleActions(){
   }
   acts.push({ name:'防禦', desc:'大幅減傷・回復靈力與體力', fn:()=>act('guard') });
   acts.push({ name:'閃避', desc:'有機率完全迴避下一擊', fn:()=>act('dodge') });
-  const grid = document.createElement('div');
-  grid.className = 'combat-actions';
-  acts.forEach(a => {
-    const b = document.createElement('button');
-    b.className = 'cb-action ' + (a.cls||'');
-    b.disabled = !!a.dis;
-    b.innerHTML = `<div class="cb-act-name">${a.name}</div><div class="cb-act-desc">${a.desc}</div>`;
-    if (!a.dis) b.onclick = a.fn;
-    grid.appendChild(b);
-  });
+  const totalItems = (S.items.heal||0) + (S.items.mp||0) + (S.items.focus||0);
+  acts.push({ name:`道具 (${totalItems})`, desc:'使用消耗品・消耗一回合', cls:'item', dis:totalItems<=0, fn:()=>{ B.itemMenu = true; renderBattle(); } });
+
+  acts.forEach(a => grid.appendChild(mkBtn(a.name, a.desc, a.dis, a.cls, a.fn)));
   box.appendChild(grid);
+}
+
+function useItem(k){
+  if ((S.items[k]||0) <= 0) return;
+  S.items[k]--; B.itemMenu = false;
+  if (k === 'heal') { const h = Math.round(B.pMax*0.4); B.pHp = Math.min(B.pMax, B.pHp+h); B.log.push({ c:'heal', t:`你服下回復丹，回復 ${h} 點體力。` }); }
+  else if (k === 'mp') { B.pMp = Math.min(100, B.pMp+50); B.log.push({ c:'heal', t:'你服下靈壓丹，回復 50 靈力。' }); }
+  else if (k === 'focus') { B.focus = true; B.log.push({ c:'system', t:'你貼上集中符——下一擊必定暴擊，且威力大增。' }); }
+  saveS();
+  enemyTurn();
 }
 
 function hollowMul(){ return B.hollowOn ? 1.6 : 1; }
@@ -2100,25 +2264,31 @@ function act(type){
   const e = B.enemy;
   if (type === 'basic') {
     let d = playerAtk() * B.atkMul * hollowMul() * rand(0.85,1.15);
-    const crit = Math.random() < critChance(); if (crit) d *= 1.6;
+    let crit = Math.random() < critChance();
+    if (B.focus) { crit = true; d *= 1.7; B.focus = false; }
+    if (crit) { d *= 1.6; unlockAch('crit'); }
     d = Math.round(d); e.hp -= d; B.pMp = Math.min(100, B.pMp+8);
     B.log.push({ c:crit?'crit':'you', t:`你揮出${B.hollowOn?'虛面亂舞':(B.form==='sealed'?'一刀':'『曙』')}，造成 ${d} 傷害${crit?'（暴擊！）':''}。` });
     lifesteal(d);
   } else if (type === 'skill') {
     B.pMp -= 25;
     let d = playerAtk() * B.atkMul * hollowMul() * 1.9 * rand(0.9,1.1);
-    const crit = Math.random() < critChance(); if (crit) d *= 1.6;
+    let crit = Math.random() < critChance();
+    if (B.focus) { crit = true; d *= 1.7; B.focus = false; }
+    if (crit) { d *= 1.6; unlockAch('crit'); }
     d = Math.round(d); e.hp -= d;
     B.log.push({ c:crit?'crit':'you', t:`你${B.hollowOn?'轟出虛閃（Cero）':'詠唱鬼道・赤火炮'}，造成 ${d} 傷害${crit?'（暴擊！）':''}。` });
     lifesteal(d);
   } else if (type === 'release') {
     B.pMp -= 20; B.releaseUsed = true; B.form = B.bat.release;
     B.atkMul = REL_MULT[B.bat.release]; B.pHp = Math.min(B.pMax, B.pHp+25);
+    unlockAch('release');
     B.log.push({ c:'heal', t:`你解放了【${REL_NAME[B.bat.release]}】！攻擊力大幅提升，傷勢也得到回復。` });
   } else if (type === 'hollow') {
     B.pMp -= 30; B.hollowOn = true;
     B.hollowRisky = B.pHp < B.pMax * 0.3;
     B.hollowTurns = 4;
+    unlockAch('hollow');
     B.log.push({ c:'crit', t:`你的臉上覆上了【虛面】！靈壓暴漲，攻擊大幅強化，攻擊將汲取敵人靈魂回血——但它撐不了太久。${B.hollowRisky?'（體力低下，虛化反噬將更劇烈！）':''}` });
   } else if (type === 'guard') {
     B.guard = true; B.pMp = Math.min(100, B.pMp+12); B.pHp = Math.min(B.pMax, B.pHp+6);
@@ -2161,6 +2331,7 @@ function enemyTurn(){
     B.log.push({ c:special?'crit':'enemy', t:`${e.name} ${special?'的強力一擊命中！造成':'攻擊命中，造成'} ${dmg} 傷害。` });
   }
   B.pHp -= dmg;
+  B.dmgTaken += dmg;
   if (B.pHp <= 0) { defeat(); return; }
   finishRound();
 }
@@ -2184,12 +2355,35 @@ function finishRound(){
   renderBattle();
 }
 
+function battleRank(){
+  const hpFrac = B.pHp / B.pMax;
+  if (B.dmgTaken === 0 || (hpFrac >= 0.7 && B.turn <= 8)) return 'S';
+  if (hpFrac >= 0.5) return 'A';
+  if (hpFrac >= 0.25) return 'B';
+  return 'C';
+}
+function grantItems(count){
+  const pool = ['heal','mp','focus']; const got = {};
+  for (let i=0;i<count;i++){ const k = pool[Math.floor(rand(0,3))]; S.items[k]=(S.items[k]||0)+1; got[k]=(got[k]||0)+1; }
+  return Object.keys(got).map(k => `${ITEM_INFO[k].name}×${got[k]}`).join('、');
+}
+
 function victory(){
   B.over = true;
   renderBattle();
+  unlockAch('firstWin');
+  if (B.dmgTaken === 0) unlockAch('flawless');
+  if (S.difficulty === 'hard') unlockAch('shura');
+  const rank = battleRank();
+  if (rank === 'S') unlockAch('rankS');
+
+  if (B.bat.arena) { arenaWin(rank); return; }
+
+  const gained = grantItems(rank==='S'?3 : rank==='A'?2 : 1);
+  saveS();
   const v = document.createElement('div');
   v.className = 'cb-victory';
-  v.innerHTML = `<div style="font-size:18px;font-weight:700;margin-bottom:6px">⚔ 勝　利</div><div style="font-size:13px;line-height:1.7">${B.bat.winText||'你擊敗了敵人！'}</div>`;
+  v.innerHTML = `<div class="cb-rank ${rank}">${rank}</div><div style="font-size:16px;font-weight:700;margin-bottom:4px">⚔ 勝　利</div><div style="font-size:13px;line-height:1.7">${B.bat.winText||'你擊敗了敵人！'}</div><div class="cb-reward">獲得道具：${gained}</div>`;
   document.querySelector('.combat').prepend(v);
   const box = document.getElementById('choices'); box.innerHTML = '';
   const btn = document.createElement('button');
@@ -2201,6 +2395,7 @@ function victory(){
 function defeat(){
   B.over = true;
   renderBattle();
+  if (B.bat.arena) { arenaLose(); return; }
   const d = document.createElement('div');
   d.className = 'cb-defeat';
   d.innerHTML = `<div style="font-size:18px;font-weight:700;margin-bottom:6px">你被擊倒了……</div><div style="font-size:13px;line-height:1.7">但只要還有想守護的人，就不能在此倒下。</div>`;
@@ -2216,6 +2411,91 @@ function defeat(){
   skip.innerHTML = '<div class="cb-act-name">以劇情之力突破（跳過戰鬥）</div>';
   skip.onclick = () => { const to = B.win, fx = B.bat.winFx; B = null; if (fx) applyFx(fx); renderNode(to); };
   box.appendChild(skip);
+}
+
+/* ════════════════════════════════════════════════════════
+   虛之修練場（ARENA）— 可反覆挑戰的爬塔戰鬥
+════════════════════════════════════════════════════════ */
+let arenaTier = 1;
+function arenaName(t){ return t<=1?'虛之殘影' : t<=3?'骸骨面' : t<=5?'特大虛' : t<=7?'破面的仿影' : '虛聖の影'; }
+
+function openArena(){
+  if (!S.name || !document.getElementById('modal-overlay').classList.contains('hidden')) {
+    alert('請先開始遊戲，再進入修練場。'); return;
+  }
+  const best = ACH_STATE.arenaBest || 0;
+  const inv = `<div class="inv-line">持有道具：<b>回復丹 ${S.items.heal||0}</b>・<b>靈壓丹 ${S.items.mp||0}</b>・<b>集中符 ${S.items.focus||0}</b></div>`;
+  const opts = [1,3,5,8].map(t =>
+    `<div class="arena-opt" onclick="startArena(${t})"><div><div class="ao-name">第 ${t} 階・${arenaName(t)}</div><div class="ao-desc">擊破後可挑戰更高階，難度與獎勵遞增</div></div><div class="ao-tier">${t}</div></div>`).join('');
+  showPanel(`<h2>虛之修練場</h2><div class="psub">反覆挑戰虛之化身，磨練戰技、賺取道具。<br>最高紀錄：第 <b style="color:var(--gold)">${best}</b> 階</div>${inv}${opts}<button class="panel-close" onclick="closePanel()">關閉</button>`);
+}
+
+function startArena(tier){ arenaTier = tier; closePanel(); launchArenaBattle(); }
+
+function launchArenaBattle(){
+  const t = arenaTier;
+  const bat = {
+    arena: true,
+    enemy: { name:`虛之化身・第${t}階（${arenaName(t)}）`, hp:Math.round(110 + t*72), atk:11 + t*4.6,
+             specialMult:2.2 + t*0.04, specialEvery:3, special:'虛閃亂舞' },
+    release: S.zanState !== 'sealed' ? S.zanState : null,
+    intro: `虛之修練場・第 ${t} 階——${arenaName(t)} 現身！`,
+  };
+  startBattle(bat, '__arena__');
+}
+
+function arenaWin(rank){
+  const t = arenaTier;
+  ACH_STATE.arenaBest = Math.max(ACH_STATE.arenaBest||0, t); saveAch();
+  if (t >= 5) unlockAch('arena5');
+  const gained = grantItems(1 + Math.floor(t/2) + (rank==='S'?2 : rank==='A'?1 : 0));
+  saveS();
+  const v = document.createElement('div');
+  v.className = 'cb-victory';
+  v.innerHTML = `<div class="cb-rank ${rank}">${rank}</div><div style="font-size:16px;font-weight:700;margin-bottom:4px">⚔ 第 ${t} 階 突破！</div><div class="cb-reward">獲得道具：${gained}</div>`;
+  document.querySelector('.combat').prepend(v);
+  const box = document.getElementById('choices'); box.innerHTML = '';
+  const next = document.createElement('button');
+  next.className = 'continue-btn'; next.textContent = `▶ 挑戰第 ${t+1} 階`;
+  next.onclick = () => { arenaTier = t+1; launchArenaBattle(); };
+  box.appendChild(next);
+  box.appendChild(arenaLeaveBtn());
+}
+
+function arenaLose(){
+  const t = arenaTier;
+  const d = document.createElement('div');
+  d.className = 'cb-defeat';
+  d.innerHTML = `<div style="font-size:18px;font-weight:700;margin-bottom:6px">在第 ${t} 階倒下了……</div><div style="font-size:13px">但這只是修練。整頓旗鼓，再來挑戰吧。</div>`;
+  document.querySelector('.combat').prepend(d);
+  const box = document.getElementById('choices'); box.innerHTML = '';
+  const retry = document.createElement('button');
+  retry.className = 'continue-btn'; retry.textContent = `↻ 重試第 ${t} 階`;
+  retry.onclick = () => launchArenaBattle();
+  box.appendChild(retry);
+  box.appendChild(arenaLeaveBtn());
+}
+
+function arenaLeaveBtn(){
+  const leave = document.createElement('button');
+  leave.className = 'cb-action';
+  leave.style.cssText = 'margin-top:10px;width:100%;text-align:center;max-width:780px';
+  leave.innerHTML = '<div class="cb-act-name">離開修練場</div>';
+  leave.onclick = () => { B = null; renderNode(S.node); };
+  return leave;
+}
+
+/* ── 面板（成就 / 修練場）── */
+function showPanel(html){ document.getElementById('panel-body').innerHTML = html; document.getElementById('panel-overlay').classList.remove('hidden'); }
+function closePanel(){ document.getElementById('panel-overlay').classList.add('hidden'); }
+function openAchievements(){
+  ACH_STATE = loadAch();
+  const done = ACHIEVEMENTS.filter(a => ACH_STATE[a.id]).length;
+  const list = ACHIEVEMENTS.map(a => {
+    const u = !!ACH_STATE[a.id];
+    return `<div class="ach-item ${u?'':'locked'}"><div class="ach-icon">${u?a.icon:'🔒'}</div><div class="ach-body"><div class="ach-title">${a.title}</div><div class="ach-desc">${a.desc}</div></div>${u?'<div class="ach-done">✓ 達成</div>':''}</div>`;
+  }).join('');
+  showPanel(`<h2>成　就</h2><div class="psub">已解鎖 <b style="color:var(--accent2)">${done}</b> / ${ACHIEVEMENTS.length}（跨周目永久保存）</div>${list}<button class="panel-close" onclick="closePanel()">關閉</button>`);
 }
 
 function choose(ch) {
@@ -2418,9 +2698,11 @@ function showSummary(chapter) {
 ════════════════════════════════════════════════════════ */
 function doRestart() {
   const name = S.name;
+  const diff = S.difficulty || 'normal';
   S = { name, hp:100, mp:100, sta:100, reiatsu:15, courage:0, calm:0, sense:0, bond:0,
         badge:'尚未覺醒', charMeta:'人類・空座町高中生', zanName:null, zanState:'sealed',
-        hollowUnlocked:false, flags:{}, node:'c1_00', visited:[] };
+        hollowUnlocked:false, difficulty:diff, items:{ heal:2, mp:2, focus:1 },
+        flags:{}, node:'c1_00', visited:[] };
   localStorage.setItem('bleach_story_save', JSON.stringify(S));
   renderNode('c1_00');
 }
@@ -2442,6 +2724,8 @@ window.addEventListener('DOMContentLoaded', () => {
       const data = JSON.parse(saved);
       if (data && data.name && data.node && STORY[data.node]) {
         S = data;
+        if (!S.items) S.items = { heal:2, mp:2, focus:1 };
+        if (!S.difficulty) S.difficulty = 'normal';
         document.getElementById('modal-overlay').classList.add('hidden');
         renderNode(S.node);
         return;
